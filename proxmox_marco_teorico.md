@@ -4,17 +4,17 @@
 
 ### Informe
 
-**Gabriel Fernando Castillo Mendieta**
-**Esteban Nicolás Peña Coronado**
+**Gabriel Fernando Castillo Mendieta**<br>
+**Esteban Nicolás Peña Coronado**<br>
 **Luis Javier Lopez Galindo**
 
 **Docente:** Frey Alfonso Santamaría Buitrago
 Ingeniero de Sistemas
 
-**Universidad Pedagógica y Tecnológica de Colombia**
-Ingeniería de Sistemas y Computación
-Electiva IaaS y Virtualización
-Tunja
+**Universidad Pedagógica y Tecnológica de Colombia**<br>
+Ingeniería de Sistemas y Computación<br>
+Electiva IaaS y Virtualización<br>
+Tunja<br>
 2026
 
 </div>
