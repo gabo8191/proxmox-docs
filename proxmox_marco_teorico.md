@@ -23,76 +23,81 @@ Tunja<br>
 
 # TABLA DE CONTENIDOS
 
-- [**1. Arquitectura y Fundamentos**](#1-arquitectura-y-fundamentos)
-  - [1.1. ¿Qué es Proxmox VE? Definición y casos de uso](#11-qué-es-proxmox-ve-definición-y-casos-de-uso)
-  - [1.2. Tipos de hipervisores: Tipo 1 (Bare Metal) ¿dónde encaja Proxmox?](#12-tipos-de-hipervisores-tipo-1-bare-metal-dónde-encaja-proxmox)
-  - [1.3. Tecnologías de virtualización integradas](#13-tecnologías-de-virtualización-integradas)
-    - [1.3.1. KVM: virtualización completa de hardware](#131-kvm-virtualización-completa-de-hardware)
-    - [1.3.2. LXC: contenedores ligeros a nivel de sistema operativo](#132-lxc-contenedores-ligeros-a-nivel-de-sistema-operativo)
-    - [1.3.3. Diferencias prácticas: ¿cuándo usar KVM y cuándo LXC?](#133-diferencias-prácticas-cuándo-usar-kvm-y-cuándo-lxc)
-  - [1.4. Modelo de licenciamiento: software libre vs. soporte comercial](#14-modelo-de-licenciamiento-software-libre-vs-soporte-comercial)
-    - [1.4.1. Licencia de Código Abierto](#141-licencia-de-código-abierto)
-    - [1.4.2. Modelo de Soporte Comercial](#142-modelo-de-soporte-comercial)
-  - [1.5. Productos disponibles](#15-productos-disponibles)
-    - [1.5.1. Proxmox Virtual Environment (Plataforma de Virtualización)](#151-proxmox-virtual-environment-plataforma-de-virtualización)
-    - [1.5.2. Proxmox Backup Server (Servidor de Respaldo Empresarial)](#152-proxmox-backup-server-servidor-de-respaldo-empresarial)
-    - [1.5.3. Proxmox Mail Gateway (Puerta de Enlace de Correo)](#153-proxmox-mail-gateway-puerta-de-enlace-de-correo)
-    - [1.5.4. Proxmox Datacenter Management (Administrador del Centro de Datos)](#154-proxmox-datacenter-management-administrador-del-centro-de-datos)
-  - [1.6. Novedades en la última versión (v9.1)](#16-novedades-en-la-última-versión-v91)
-    - [1.6.1. Creación de Contenedores LXC a Partir de Imágenes OCI](#161-creación-de-contenedores-lxc-a-partir-de-imágenes-oci)
-    - [1.6.2. Soporte para Estado de TPM en Formato qcow2](#162-soporte-para-estado-de-tpm-en-formato-qcow2)
-    - [1.6.3. Control Granular de Virtualización Anidada](#163-control-granular-de-virtualización-anidada)
-    - [1.6.4. Reporte Mejorado de Estado de SDN](#164-reporte-mejorado-de-estado-de-sdn)
-    - [1.6.5. Kernel Linux 6.17 y Debian 13.2 Trixie](#165-kernel-linux-617-y-debian-132-trixie)
-    - [1.6.6. Infraestructura General de Versión 9.1](#166-infraestructura-general-de-versión-91)
-- [**2. Instalación y Primeros Pasos**](#2-instalación-y-primeros-pasos)
-  - [2.1. Requisitos de hardware recomendados](#21-requisitos-de-hardware-recomendados)
-  - [2.2. Proceso de instalación desde ISO](#22-proceso-de-instalación-desde-iso)
-  - [2.3. Acceso a la GUI Web (HTTPS, puerto 8006)](#23-acceso-a-la-gui-web-https-puerto-8006)
-  - [2.4. Visión general de la interfaz: Datacenter, Nodos, VMs y Contenedores](#24-visión-general-de-la-interfaz-datacenter-nodos-vms-y-contenedores)
-  - [2.5. Actualización del sistema y gestión de repositorios (Community vs. Enterprise)](#25-actualización-del-sistema-y-gestión-de-repositorios-community-vs-enterprise)
-  - [2.6. Primeras configuraciones: hostname, red de gestión, DNS y NTP](#26-primeras-configuraciones-hostname-red-de-gestión-dns-y-ntp)
-- [**3. Gestión de Almacenamiento**](#3-gestión-de-almacenamiento)
-  - [3.1. Almacenamiento Local](#31-almacenamiento-local)
-    - [3.1.1. Directorios (Directory): el tipo más simple, basado en sistema de ficheros](#311-directorios-directory-el-tipo-más-simple-basado-en-sistema-de-ficheros)
-    - [3.1.2. LVM y LVM-Thin: gestión de volúmenes lógicos y thin provisioning](#312-lvm-y-lvm-thin-gestión-de-volúmenes-lógicos-y-thin-provisioning)
-    - [3.1.3. ZFS: sistema de archivos avanzado con checksums, snapshots nativos y RAID por software](#313-zfs-sistema-de-archivos-avanzado-con-checksums-snapshots-nativos-y-raid-por-software)
-  - [3.2. Almacenamiento Compartido](#32-almacenamiento-compartido)
-    - [3.2.1. NFS: almacenamiento en red basado en ficheros](#321-nfs-almacenamiento-en-red-basado-en-ficheros)
-- [**4. Redes Virtuales**](#4-redes-virtuales)
-  - [4.1. Conceptos base: interfaces físicas y VLAN](#41-conceptos-base-interfaces-físicas-y-vlan)
-  - [4.2. Linux Bridge: el estándar por defecto en Proxmox y su configuración](#42-linux-bridge-el-estándar-por-defecto-en-proxmox-y-su-configuración)
-  - [4.3. ¿Qué es el módulo SDN de Proxmox?](#43-qué-es-el-módulo-sdn-de-proxmox)
-- [**5. Creación y Gestión de VMs y Contenedores**](#5-creación-y-gestión-de-vms-y-contenedores)
-  - [5.1. Creación de una VM KVM: opciones de CPU, memoria, disco y red](#51-creación-de-una-vm-kvm-opciones-de-cpu-memoria-disco-y-red)
-  - [5.2. Plantillas de VM y clonación (linked clone vs. full clone)](#52-plantillas-de-vm-y-clonación-linked-clone-vs-full-clone)
-  - [5.3. Creación de contenedores LXC: descarga de plantillas del repositorio](#53-creación-de-contenedores-lxc-descarga-de-plantillas-del-repositorio)
-  - [5.4. Gestión del ciclo de vida: arranque, pausa, apagado, reinicio y eliminación](#54-gestión-del-ciclo-de-vida-arranque-pausa-apagado-reinicio-y-eliminación)
-- [**6. Continuidad y Respaldos**](#6-continuidad-y-respaldos)
-  - [6.1. Protección del Dato](#61-protección-del-dato)
-    - [6.1.1. Snapshots (instantáneas): creación, restauración y gestión](#611-snapshots-instantáneas-creación-restauración-y-gestión)
-  - [6.2. Copias de Seguridad](#62-copias-de-seguridad)
-    - [6.2.1. Backup integrado en Proxmox VE: modos vzdump (snapshot, suspend, stop)](#621-backup-integrado-en-proxmox-ve-modos-vzdump-snapshot-suspend-stop)
-    - [6.2.2. Tareas de backup programadas y su configuración](#622-tareas-de-backup-programadas-y-su-configuración)
-- [**7. Seguridad y Administración**](#7-seguridad-y-administración)
-  - [7.1. Control de Acceso](#71-control-de-acceso)
-    - [7.1.1. RBAC: usuarios, grupos y roles predefinidos en Proxmox](#711-rbac-usuarios-grupos-y-roles-predefinidos-en-proxmox)
-    - [7.1.2. Dominios de autenticación: Proxmox VE Auth y Linux PAM](#712-dominios-de-autenticación-proxmox-ve-auth-y-linux-pam)
-  - [7.2. Interfaces de Administración](#72-interfaces-de-administración)
-    - [7.2.1. GUI Web: navegación y tareas comunes](#721-gui-web-navegación-y-tareas-comunes)
-    - [7.2.2. CLI: comandos qm y pct](#722-cli-comandos-qm-y-pct)
-  - [7.3. Firewall Integrado](#73-firewall-integrado)
-    - [7.3.1. Arquitectura del firewall: niveles Datacenter, Nodo y VM/Contenedor](#731-arquitectura-del-firewall-niveles-datacenter-nodo-y-vmcontenedor)
-    - [7.3.2. Grupos de seguridad y macros predefinidas](#732-grupos-de-seguridad-y-macros-predefinidas)
-  - [7.4. Alta Disponibilidad (HA)](#74-alta-disponibilidad-ha)
-    - [7.4.1. HA Manager: monitoreo y recuperación automática de VMs/contenedores](#741-ha-manager-monitoreo-y-recuperación-automática-de-vmscontenedores)
-- [**8. Consolas y Conexión a Instancias**](#8-consolas-y-conexión-a-instancias)
-  - [8.1. Consola noVNC: acceso web sin cliente adicional](#81-consola-novnc-acceso-web-sin-cliente-adicional)
-  - [8.2. xterm.js: terminal ligera para contenedores y VMs Linux](#82-xtermjs-terminal-ligera-para-contenedores-y-vms-linux)
-  - [8.3. Acceso SSH directo al nodo y a los contenedores](#83-acceso-ssh-directo-al-nodo-y-a-los-contenedores)
-- [**9. Monitoreo Básico**](#9-monitoreo-básico)
-  - [9.1. Monitoreo de recursos en la GUI](#91-monitoreo-de-recursos-en-la-gui-cpu-ram-red-y-almacenamiento-logs-del-sistema-y-del-clúster)
-- [**Referencias Bibliográficas**](#referencias-bibliográficas)
+- [PROXMOX](#proxmox)
+    - [Informe](#informe)
+- [TABLA DE CONTENIDOS](#tabla-de-contenidos)
+- [LISTA DE FIGURAS](#lista-de-figuras)
+- [LISTA DE TABLAS](#lista-de-tablas)
+  - [1. Arquitectura y Fundamentos](#1-arquitectura-y-fundamentos)
+    - [1.1. ¿Qué es Proxmox VE? Definición y casos de uso](#11-qué-es-proxmox-ve-definición-y-casos-de-uso)
+    - [1.2. Tipos de hipervisores: Tipo 1 (Bare Metal) ¿dónde encaja Proxmox?](#12-tipos-de-hipervisores-tipo-1-bare-metal-dónde-encaja-proxmox)
+    - [1.3. Tecnologías de virtualización integradas](#13-tecnologías-de-virtualización-integradas)
+      - [1.3.1. KVM: virtualización completa de hardware](#131-kvm-virtualización-completa-de-hardware)
+      - [1.3.2. LXC: contenedores ligeros a nivel de sistema operativo](#132-lxc-contenedores-ligeros-a-nivel-de-sistema-operativo)
+      - [1.3.3. Diferencias prácticas: ¿cuándo usar KVM y cuándo LXC?](#133-diferencias-prácticas-cuándo-usar-kvm-y-cuándo-lxc)
+    - [1.4. Modelo de licenciamiento: software libre vs. soporte comercial](#14-modelo-de-licenciamiento-software-libre-vs-soporte-comercial)
+      - [1.4.1. Licencia de Código Abierto](#141-licencia-de-código-abierto)
+      - [1.4.2. Modelo de Soporte Comercial](#142-modelo-de-soporte-comercial)
+    - [1.5. Productos disponibles](#15-productos-disponibles)
+      - [1.5.1. Proxmox Virtual Environment (Plataforma de Virtualización)](#151-proxmox-virtual-environment-plataforma-de-virtualización)
+      - [1.5.2. Proxmox Backup Server (Servidor de Respaldo Empresarial)](#152-proxmox-backup-server-servidor-de-respaldo-empresarial)
+      - [1.5.3. Proxmox Mail Gateway (Puerta de Enlace de Correo)](#153-proxmox-mail-gateway-puerta-de-enlace-de-correo)
+      - [1.5.4. Proxmox Datacenter Management (Administrador del Centro de Datos](#154-proxmox-datacenter-management-administrador-del-centro-de-datos)
+    - [1.6. Novedades en la última versión (v9.1)](#16-novedades-en-la-última-versión-v91)
+      - [1.6.1. Creación de Contenedores LXC a Partir de Imágenes OCI](#161-creación-de-contenedores-lxc-a-partir-de-imágenes-oci)
+      - [1.6.2. Soporte para Estado de TPM en Formato qcow2](#162-soporte-para-estado-de-tpm-en-formato-qcow2)
+      - [1.6.3. Control Granular de Virtualización Anidada](#163-control-granular-de-virtualización-anidada)
+      - [1.6.4. Reporte Mejorado de Estado de SDN](#164-reporte-mejorado-de-estado-de-sdn)
+      - [1.6.5. Kernel Linux 6.17 y Debian 13.2 Trixie](#165-kernel-linux-617-y-debian-132-trixie)
+      - [1.6.6. Infraestructura General de Versión 9.1](#166-infraestructura-general-de-versión-91)
+  - [2. Instalación y Primeros Pasos](#2-instalación-y-primeros-pasos)
+    - [2.1. Requisitos de hardware recomendados](#21-requisitos-de-hardware-recomendados)
+    - [2.2. Proceso de instalación desde ISO](#22-proceso-de-instalación-desde-iso)
+    - [2.3. Acceso a la GUI Web (HTTPS, puerto 8006)](#23-acceso-a-la-gui-web-https-puerto-8006)
+    - [2.4. Visión general de la interfaz: Datacenter, Nodos, VMs y Contenedores](#24-visión-general-de-la-interfaz-datacenter-nodos-vms-y-contenedores)
+    - [2.5. Actualización del sistema y gestión de repositorios (Community vs. Enterprise)](#25-actualización-del-sistema-y-gestión-de-repositorios-community-vs-enterprise)
+    - [2.6. Primeras configuraciones: hostname, red de gestión, DNS y NTP](#26-primeras-configuraciones-hostname-red-de-gestión-dns-y-ntp)
+  - [3. Gestión de Almacenamiento](#3-gestión-de-almacenamiento)
+    - [3.1. Almacenamiento Local](#31-almacenamiento-local)
+      - [3.1.1. Directorios (Directory): el tipo más simple, basado en sistema de ficheros](#311-directorios-directory-el-tipo-más-simple-basado-en-sistema-de-ficheros)
+      - [3.1.2. LVM y LVM-Thin: gestión de volúmenes lógicos y thin provisioning](#312-lvm-y-lvm-thin-gestión-de-volúmenes-lógicos-y-thin-provisioning)
+      - [3.1.3. ZFS: sistema de archivos avanzado con checksums, snapshots nativos y RAID por software](#313-zfs-sistema-de-archivos-avanzado-con-checksums-snapshots-nativos-y-raid-por-software)
+    - [3.2. Almacenamiento Compartido](#32-almacenamiento-compartido)
+      - [3.2.1. NFS: almacenamiento en red basado en ficheros](#321-nfs-almacenamiento-en-red-basado-en-ficheros)
+  - [4. Redes Virtuales](#4-redes-virtuales)
+    - [4.1. Conceptos base: interfaces físicas y VLAN](#41-conceptos-base-interfaces-físicas-y-vlan)
+    - [4.2. Linux Bridge: el estándar por defecto en Proxmox y su configuración](#42-linux-bridge-el-estándar-por-defecto-en-proxmox-y-su-configuración)
+    - [4.3. ¿Qué es el módulo SDN de Proxmox?](#43-qué-es-el-módulo-sdn-de-proxmox)
+  - [5. Creación y Gestión de VMs y Contenedores](#5-creación-y-gestión-de-vms-y-contenedores)
+    - [5.1. Creación de una VM KVM: opciones de CPU, memoria, disco y red](#51-creación-de-una-vm-kvm-opciones-de-cpu-memoria-disco-y-red)
+    - [5.2. Plantillas de VM y clonación (linked clone vs. full clone)](#52-plantillas-de-vm-y-clonación-linked-clone-vs-full-clone)
+    - [5.3. Creación de contenedores LXC: descarga de plantillas del repositorio](#53-creación-de-contenedores-lxc-descarga-de-plantillas-del-repositorio)
+    - [5.4. Gestión del ciclo de vida: arranque, pausa, apagado, reinicio y eliminación](#54-gestión-del-ciclo-de-vida-arranque-pausa-apagado-reinicio-y-eliminación)
+  - [6. Continuidad y Respaldos](#6-continuidad-y-respaldos)
+    - [6.1. Protección del Dato](#61-protección-del-dato)
+      - [6.1.1. Snapshots (instantáneas): creación, restauración y gestión](#611-snapshots-instantáneas-creación-restauración-y-gestión)
+    - [6.2. Copias de Seguridad](#62-copias-de-seguridad)
+      - [6.2.1. Backup integrado en Proxmox VE: modos vzdump (snapshot, suspend, stop)](#621-backup-integrado-en-proxmox-ve-modos-vzdump-snapshot-suspend-stop)
+      - [6.2.2. Tareas de backup programadas y su configuración](#622-tareas-de-backup-programadas-y-su-configuración)
+  - [7. Seguridad y Administración](#7-seguridad-y-administración)
+    - [7.1. Control de Acceso](#71-control-de-acceso)
+      - [7.1.1. RBAC: usuarios, grupos y roles predefinidos en Proxmox](#711-rbac-usuarios-grupos-y-roles-predefinidos-en-proxmox)
+      - [7.1.2. Dominios de autenticación: Proxmox VE Auth y Linux PAM](#712-dominios-de-autenticación-proxmox-ve-auth-y-linux-pam)
+    - [7.2. Interfaces de Administración](#72-interfaces-de-administración)
+      - [7.2.1. GUI Web: navegación y tareas comunes](#721-gui-web-navegación-y-tareas-comunes)
+      - [7.2.2. CLI: comandos qm y pct](#722-cli-comandos-qm-y-pct)
+    - [7.3. Firewall Integrado](#73-firewall-integrado)
+      - [7.3.1. Arquitectura del firewall: niveles Datacenter, Nodo y VM/Contenedor](#731-arquitectura-del-firewall-niveles-datacenter-nodo-y-vmcontenedor)
+      - [7.3.2. Grupos de seguridad y macros predefinidas](#732-grupos-de-seguridad-y-macros-predefinidas)
+    - [7.4. Alta Disponibilidad (HA)](#74-alta-disponibilidad-ha)
+      - [7.4.1. HA Manager: monitoreo y recuperación automática de VMs/contenedores](#741-ha-manager-monitoreo-y-recuperación-automática-de-vmscontenedores)
+  - [8. Consolas y Conexión a Instancias](#8-consolas-y-conexión-a-instancias)
+    - [8.1. Consola noVNC: acceso web sin cliente adicional](#81-consola-novnc-acceso-web-sin-cliente-adicional)
+    - [8.2. xterm.js: terminal ligera para contenedores y VMs Linux](#82-xtermjs-terminal-ligera-para-contenedores-y-vms-linux)
+    - [8.3. Acceso SSH directo al nodo y a los contenedores](#83-acceso-ssh-directo-al-nodo-y-a-los-contenedores)
+  - [9. Monitoreo Básico](#9-monitoreo-básico)
+    - [9.1. Monitoreo de recursos en la GUI: CPU, RAM, red y almacenamiento ,Logs del sistema y del clúster](#91-monitoreo-de-recursos-en-la-gui-cpu-ram-red-y-almacenamiento-logs-del-sistema-y-del-clúster)
+  - [REFERENCIAS BIBLIOGRÁFICAS](#referencias-bibliográficas)
 
 ---
 
@@ -237,55 +242,36 @@ Comparación detallada entre KVM y LXC en Proxmox VE
 <td>LXC</td>
 </tr>
 <tr>
-<td>Aislamiento y</td>
-<td>Excelente, aislamiento</td>
-<td>Bueno, pero kernel</td>
+<td>Aislamiento y Seguridad</td>
+<td>Excelente, aislamiento de hardware</td>
+<td>Bueno, pero kernel compartido</td>
 <td>KVM</td>
 </tr>
+<tr>
+<td>Compatibilidad SO</td>
+<td>Windows, Linux, BSD, macOS, etc.</td>
+<td>Solo Linux</td>
+<td>KVM</td>
+</tr>
+<tr>
+<td>Tiempo de Arranque</td>
+<td>Más lento, completa inicialización SO</td>
+<td>Muy rápido, segundos</td>
+<td>LXC</td>
+</tr>
+<tr>
+<td>Densidad de Máquinas</td>
+<td>Baja-Media</td>
+<td>Alta</td>
+<td>LXC</td>
+</tr>
+<tr>
+<td>Casos de Uso</td>
+<td>Desarrollo, testing, apps heterogéneas</td>
+<td>Microservicios, apps Linux</td>
+<td>Depende</td>
+</tr>
 </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Seguridad</td>
-      <td>de hardware</td>
-      <td>compartido</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Compatibilidad SO</td>
-      <td>Windows, Linux, BSD, macOS, etc.</td>
-      <td>Solo Linux</td>
-      <td>KVM</td>
-    </tr>
-    <tr>
-      <td>Tiempo de Arranque</td>
-      <td>Más lento, completa inicialización SO</td>
-      <td>Muy rápido, segundos</td>
-      <td>LXC</td>
-    </tr>
-    <tr>
-      <td>Densidad de Máquinas</td>
-      <td>Baja-Media</td>
-      <td>Alta</td>
-      <td>LXC</td>
-    </tr>
-    <tr>
-      <td>Casos de Uso</td>
-      <td>Desarrollo, testing, apps heterogéneas</td>
-      <td>Microservicios, apps Linux</td>
-      <td>Depende</td>
-    </tr>
-  </tbody>
 </table>
 
 Nota. Elaboración propia a partir de [5][6].
@@ -779,22 +765,9 @@ Modos de acuerdo al huésped y comportamientos e implicaciones
 <td>Realiza live backup copiando bloques mientras la VM está en ejecución; existe un riesgo pequeño de inconsistencia.</td>
 <td>Menor downtime, pequeña exposición a inconsistencia.</td>
 </tr>
-</tbody>
-</table>
-
-<table>
-  <thead>
-    <tr>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>VM</td>
-      <td>snapshot + guest agent</td>
+<tr>
+<td>VM</td>
+<td>snapshot + guest agent</td>
       <td>Si el agente está habilitado (agent: 1) y ejecutándose, invoca guest-fsfreeze-freeze y guest-fsfreeze-thaw para mejorar consistencia del sistema de archivos.</td>
       <td>Mejor consistencia con baja interrupción.</td>
     </tr>
@@ -1152,15 +1125,12 @@ Comparación general entre acceso noVNC y cliente VNC extern
 <td>Si</td>
 <td>Si</td>
 </tr>
+<tr>
+<td>Dependencia del navegador</td>
+<td>Si</td>
+<td>No</td>
+</tr>
 </tbody>
-</table>
-
-<table>
-  <tr>
-    <td>Dependencia del navegador</td>
-    <td>Si</td>
-    <td>No</td>
-  </tr>
 </table>
 
 ### 8.2. xterm.js: terminal ligera para contenedores y VMs Linux
@@ -1202,9 +1172,6 @@ Comparación funcional entre noVNC y xterm.js
     <td>No</td>
     <td>Si</td>
   </tr>
-</table>
-
-<table>
   <tr>
     <td>Consumo de recursos</td>
     <td>Medio</td>
