@@ -2,17 +2,17 @@
 
 # PROXMOX - Documentación
 
-**Gabriel Fernando Castillo Mendieta**
-**Esteban Nicolás Peña Coronado**
+**Gabriel Fernando Castillo Mendieta**<br>
+**Esteban Nicolás Peña Coronado**<br>
 **Luis Javier Lopez Galindo**
 
 ---
 
 **Docente:** Frey Alfonso Santamaría Buitrago — Ingeniero de Sistemas
 
-**Universidad Pedagógica y Tecnológica de Colombia**
-Facultad de Ingeniería — Escuela de Ingeniería de Sistemas y Computación
-Electiva IaaS y Virtualización
+**Universidad Pedagógica y Tecnológica de Colombia**<br>
+Facultad de Ingeniería — Escuela de Ingeniería de Sistemas y Computación<br>
+Electiva IaaS y Virtualización<br>
 Tunja, 2026
 
 </div>
