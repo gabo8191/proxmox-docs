@@ -32,7 +32,7 @@ A continuación se presenta el video demostrativo de la instalación y configura
 # TABLA DE CONTENIDOS
 
 - [PROXMOX](#proxmox)
-  - [Informe Técnico](#informe-técnico)
+    - [Informe Técnico](#informe-técnico)
 - [VIDEO DEMOSTRATIVO](#video-demostrativo)
 - [TABLA DE CONTENIDOS](#tabla-de-contenidos)
 - [LISTA DE FIGURAS](#lista-de-figuras)
@@ -117,6 +117,8 @@ A continuación se presenta el video demostrativo de la instalación y configura
 ---
 
 ## 1. Instalación de Proxmox VE en VirtualBox
+
+> **⚠️ Advertencia importante:** La instalación de Proxmox VE dentro de VirtualBox **no se recomienda** para uso en producción. El objetivo de Proxmox es funcionar como hipervisor **bare metal** (directamente sobre el hardware físico), aprovechando al máximo el rendimiento, la estabilidad y las capacidades de virtualización nativas. La configuración descrita en esta sección tiene **únicamente fines educativos**, para quienes no disponen de un servidor físico dedicado y desean practicar en un entorno de laboratorio. En entornos reales, Proxmox VE debe instalarse directamente en el servidor mediante la imagen ISO oficial.
 
 En esta sección se describe el proceso completo de instalación de Proxmox Virtual Environment dentro de un entorno virtualizado con Oracle VirtualBox. Esta configuración es ideal para entornos de laboratorio y aprendizaje donde no se dispone de un servidor físico dedicado.
 

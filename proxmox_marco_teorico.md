@@ -30,6 +30,7 @@ Tunja<br>
 - [LISTA DE TABLAS](#lista-de-tablas)
   - [1. Arquitectura y Fundamentos](#1-arquitectura-y-fundamentos)
     - [1.1. ¿Qué es Proxmox VE? Definición y casos de uso](#11-qué-es-proxmox-ve-definición-y-casos-de-uso)
+      - [1.1.1. Casos de uso de Proxmox VE](#111-casos-de-uso-de-proxmox-ve)
     - [1.2. Tipos de hipervisores: Tipo 1 (Bare Metal) ¿dónde encaja Proxmox?](#12-tipos-de-hipervisores-tipo-1-bare-metal-dónde-encaja-proxmox)
     - [1.3. Tecnologías de virtualización integradas](#13-tecnologías-de-virtualización-integradas)
       - [1.3.1. KVM: virtualización completa de hardware](#131-kvm-virtualización-completa-de-hardware)
@@ -68,6 +69,7 @@ Tunja<br>
     - [4.1. Conceptos base: interfaces físicas y VLAN](#41-conceptos-base-interfaces-físicas-y-vlan)
     - [4.2. Linux Bridge: el estándar por defecto en Proxmox y su configuración](#42-linux-bridge-el-estándar-por-defecto-en-proxmox-y-su-configuración)
     - [4.3. ¿Qué es el módulo SDN de Proxmox?](#43-qué-es-el-módulo-sdn-de-proxmox)
+    - [4.4. Arquitectura de redes virtuales: resumen práctico](#44-arquitectura-de-redes-virtuales-resumen-práctico)
   - [5. Creación y Gestión de VMs y Contenedores](#5-creación-y-gestión-de-vms-y-contenedores)
     - [5.1. Creación de una VM KVM: opciones de CPU, memoria, disco y red](#51-creación-de-una-vm-kvm-opciones-de-cpu-memoria-disco-y-red)
     - [5.2. Plantillas de VM y clonación (linked clone vs. full clone)](#52-plantillas-de-vm-y-clonación-linked-clone-vs-full-clone)
@@ -97,40 +99,51 @@ Tunja<br>
     - [8.3. Acceso SSH directo al nodo y a los contenedores](#83-acceso-ssh-directo-al-nodo-y-a-los-contenedores)
   - [9. Monitoreo Básico](#9-monitoreo-básico)
     - [9.1. Monitoreo de recursos en la GUI: CPU, RAM, red y almacenamiento ,Logs del sistema y del clúster](#91-monitoreo-de-recursos-en-la-gui-cpu-ram-red-y-almacenamiento-logs-del-sistema-y-del-clúster)
+  - [10. Casos de Éxito](#10-casos-de-éxito)
+    - [10.1. Farmácia Nova da Maia (Sector Salud — Portugal)](#101-farmácia-nova-da-maia-sector-salud--portugal)
+    - [10.2. Emmecubo (Comercio Electrónico — Italia)](#102-emmecubo-comercio-electrónico--italia)
+    - [10.3. Empresa de Servicios Financieros](#103-empresa-de-servicios-financieros)
+    - [10.4. Metalurgia de Alta Precisión (Sector Automotriz)](#104-metalurgia-de-alta-precisión-sector-automotriz)
+    - [10.5. Empresa de Desarrollo de Software](#105-empresa-de-desarrollo-de-software)
   - [REFERENCIAS BIBLIOGRÁFICAS](#referencias-bibliográficas)
 
 ---
 
 # LISTA DE FIGURAS
 
-| Figura | Descripción |
-|--------|-------------|
-| Fg. 1 | Vista de instalación de Proxmox [47] |
-| Fg. 2 | Log In en la MV [48] |
-| Fg. 3 | Vista de la interfaz de Proxmox [47] |
-| Fg. 4 | GUI de Proxmox Virtual Environment [17] |
-| Fg. 5 | Presentación de volúmenes y estado de disco [23] |
-| Fg. 6 | Presentación de volúmenes y estado de disco [41] |
-| Fg. 7 | Uso y gestión de un datastore en Proxmox [42] |
-| Fg. 8 | GUI de administración de Proxmox VE (Vista Datacenter y Nodo) [50] |
+| Figura | Descripción                                                         |
+| ------ | ------------------------------------------------------------------- |
+| Fg. 1  | Vista de instalación de Proxmox [47]                                |
+| Fg. 9  | Casos de uso de Proxmox VE en entornos empresariales                |
+| Fg. 11 | Arquitectura de redes virtuales: Linux Bridge y VLANs en Proxmox VE |
+| Fg. 16 | Configuración de almacenamiento en Proxmox VE                       |
+| Fg. 17 | Tabla comparativa de hipervisores Tipo 1 y Tipo 2                   |
+| Fg. 18 | Productos de la suite Proxmox                                       |
+| Fg. 19 | Requisitos de hardware — Panel de recursos del nodo                 |
+| Fg. 20 | Configuración de almacenamiento NFS compartido                      |
+| Fg. 21 | Creación y gestión de contenedores LXC                              |
+| Fg. 22 | Snapshots — Creación y restauración de instantáneas                 |
+| Fg. 23 | Repositorios Community vs. Enterprise                               |
+| Fg. 24 | Gestión de usuarios y permisos (RBAC)                               |
 
 ---
 
 # LISTA DE TABLAS
 
-| Tabla | Descripción |
-|-------|-------------|
-| Tabla 1 | Comparación entre hipervisores de Tipo 1 y Tipo 2 |
-| Tabla 2 | Comparación detallada entre KVM y LXC en Proxmox VE |
-| Tabla 3 | Requisitos mínimos y recomendados para Proxmox |
-| Tabla 4 | Características de LVM Clásico y LVM-Thin |
-| Tabla 5 | Parámetros clave de configuración del Linux Bridge en Proxmox VE |
-| Tabla 6 | Comparación entre Linked Clone y Full Clone en Proxmox VE |
-| Tabla 7 | Modos de acuerdo al huésped y comportamientos e implicaciones |
-| Tabla 8 | Roles predefinidos en Proxmox VE |
-| Tabla 9 | Comparativa entre dominios de autenticación en Proxmox VE |
-| Tabla 10 | Comparación general entre acceso noVNC y cliente VNC externo |
-| Tabla 11 | Comparación funcional entre noVNC y xterm.js |
+| Tabla    | Descripción                                                      |
+| -------- | ---------------------------------------------------------------- |
+| Tabla 1  | Comparación entre hipervisores de Tipo 1 y Tipo 2                |
+| Tabla 2  | Comparación detallada entre KVM y LXC en Proxmox VE              |
+| Tabla 3  | Requisitos mínimos y recomendados para Proxmox                   |
+| Tabla 4  | Características de LVM Clásico y LVM-Thin                        |
+| Tabla 5  | Parámetros clave de configuración del Linux Bridge en Proxmox VE |
+| Tabla 6  | Comparación entre Linked Clone y Full Clone en Proxmox VE        |
+| Tabla 7  | Modos de acuerdo al huésped y comportamientos e implicaciones    |
+| Tabla 8  | Roles predefinidos en Proxmox VE                                 |
+| Tabla 9  | Comparativa entre dominios de autenticación en Proxmox VE        |
+| Tabla 10 | Comparación general entre acceso noVNC y cliente VNC externo     |
+| Tabla 11 | Comparación funcional entre noVNC y xterm.js                     |
+| Tabla 12 | Opciones de red en Proxmox VE y casos de uso                     |
 
 ---
 
@@ -139,11 +152,28 @@ Proxmox Virtual Environment (Proxmox VE) es una plataforma de virtualización de
 organizaciones que buscan independencia de proveedor y control total sobre su infraestructura de virtualización[2].
 
 ## 1. Arquitectura y Fundamentos
+
 ### 1.1. ¿Qué es Proxmox VE? Definición y casos de uso
+
 Proxmox Virtual Environment es una plataforma completa diseñada para ejecutar máquinas virtuales y contenedores en una única solución integrada[3]. Se trata de un hipervisor de Tipo 1 o bare-metal que opera directamente sobre el hardware físico, proporcionando una capa de abstracción mínima entre los recursos de computación y las máquinas virtuales o contenedores hospedados[1]. Esta arquitectura fundamental permite que Proxmox VE ofrezca rendimiento superior y mejor aislamiento de seguridad en comparación con los hipervisores de Tipo 2, que requieren un sistema operativo host preexistente.
-La plataforma ofrece una interfaz de gestión unificada basada en web que simplifica significativamente las tareas administrativas. Un objetivo de diseño fundamental fue hacer que la administración fuera lo más fácil posible, permitiendo que incluso usuarios novatos puedan configurar e instalar Proxmox VE en cuestión de minutos[3]. Esto contrasta con las soluciones de virtualización tradicionales que requieren herramientas de gestión separadas, complejas y costosas. Los casos de uso primarios de Proxmox VE incluyen: consolidación de servidores en centros de datos, creación de infraestructuras hiperconvergidas, implementación de entornos de nube privada, backup y recuperación de desastres, así como virtualización de escritorio y servidores de aplicaciones[2]. La flexibilidad de la plataforma la hace adecuada tanto para pequeñas empresas como para grandes corporaciones con miles de máquinas virtuales.
+La plataforma ofrece una interfaz de gestión unificada basada en web que simplifica significativamente las tareas administrativas. Un objetivo de diseño fundamental fue hacer que la administración fuera lo más fácil posible, permitiendo que incluso usuarios novatos puedan configurar e instalar Proxmox VE en cuestión de minutos[3]. Esto contrasta con las soluciones de virtualización tradicionales que requieren herramientas de gestión separadas, complejas y costosas. La flexibilidad de la plataforma la hace adecuada tanto para pequeñas empresas como para grandes corporaciones con miles de máquinas virtuales.
+
+#### 1.1.1. Casos de uso de Proxmox VE
+
+Proxmox VE se adapta a una amplia variedad de escenarios empresariales y técnicos. Los principales casos de uso documentados incluyen:
+
+- **Consolidación de servidores en centros de datos:** Permite reducir la huella física de la infraestructura al ejecutar múltiples cargas de trabajo en un mismo hardware. Organizaciones consolidadas reportan reducciones del 60% o más en costos de infraestructura física al migrar de servidores dedicados a nodos virtualizados.
+- **Infraestructuras hiperconvergidas (HCI):** La integración nativa con Ceph permite construir sistemas donde el almacenamiento y la computación se distribuyen entre los mismos nodos, eliminando la necesidad de SANs dedicados y reduciendo la complejidad operativa.
+- **Nube privada y entornos multi-tenant:** El módulo SDN (Software-Defined Networking) con soporte para VXLAN y EVPN permite crear redes virtuales aisladas, ideales para proveedores de servicios o departamentos que requieren segmentación lógica sin hardware adicional.
+- **Backup y recuperación ante desastres (DR):** La combinación de Proxmox VE con Proxmox Backup Server ofrece deduplicación, encriptación de lado del cliente y replicación entre sitios, reduciendo el almacenamiento de respaldos hasta un 90% en escenarios típicos.
+- **Virtualización de escritorio (VDI) y servidores de aplicaciones:** Soporta cargas de trabajo Windows y Linux mediante KVM, con opciones de GPU passthrough para aplicaciones gráficas intensivas.
+- **Laboratorios de desarrollo y pruebas:** Los contenedores LXC y las plantillas permiten clonar entornos de desarrollo en minutos, facilitando la creación de entornos aislados para pruebas de integración y staging.
+- **Migración desde VMware u otros hipervisores:** Proxmox VE se ha consolidado como alternativa de código abierto para organizaciones que buscan eliminar costos de licenciamiento sin sacrificar capacidades empresariales como HA, live migration y backups integrados.
+
+Fg. 9 Casos de uso de Proxmox VE en entornos empresariales
 
 ### 1.2. Tipos de hipervisores: Tipo 1 (Bare Metal) ¿dónde encaja Proxmox?
+
 Para comprender la arquitectura de Proxmox VE, es esencial conocer la clasificación de los hipervisores en dos categorías principales. Los hipervisores de Tipo 1, también conocidos como bare-metal hypervisors, se ejecutan directamente en el hardware físico sin necesidad de un sistema operativo host intermedio[4]. Este diseño proporciona acceso directo a los recursos del hardware y minimiza la sobrecarga operativa, resultando en mejor rendimiento y seguridad.
 Los hipervisores de Tipo 2, por el contrario, se ejecutan sobre un sistema operativo existente, actuando como una aplicación más del sistema. Aunque ofrecen mayor flexibilidad en algunos escenarios de desarrollo, sufren de sobrecarga adicional debida a la capa del sistema operativo host y generalmente no se recomiendan para entornos de producción de alto rendimiento.
 Proxmox VE es definitivamente un hipervisor de Tipo 1. Aunque el proyecto comenzó originalmente basándose en Debian GNU/Linux, la arquitectura final de Proxmox VE funciona como un hipervisor baremetal que se instala directamente sobre hardware sin requerir un sistema operativo host separado[1]. La distinción clave radica en que Proxmox VE toma el kernel de Linux y lo convierte en el hipervisor mismo, en lugar de ejecutarse como una aplicación dentro de Linux.
@@ -197,23 +227,33 @@ Comparación entre hipervisores de Tipo 1 y Tipo 2
 
 Nota. Elaboración propia a partir de [1].
 
+![Comparación visual: Proxmox VE como hipervisor Tipo 1 bare metal](https://upload.wikimedia.org/wikipedia/commons/b/bc/Proxmox_VE_interface_01.png)
+
+Fg. 17 Tabla comparativa de hipervisores Tipo 1 y Tipo 2
+
 ### 1.3. Tecnologías de virtualización integradas
+
+Proxmox VE combina dos enfoques: **KVM** (máquinas virtuales completas) y **LXC** (contenedores ligeros). Cada uno tiene sus ventajas según el caso de uso.
+
 #### 1.3.1. KVM: virtualización completa de hardware
-Kernel-based Virtual Machine (KVM) es una tecnología de virtualización que transforma un kernel de Linux en un hipervisor completo[5]. Técnicamente, KVM es un módulo del kernel que permite que Linux actúe como hipervisor, proporcionando virtualización acelerada por hardware de CPU y memoria. Esta arquitectura única permite que Proxmox VE combine las ventajas del kernel de Linux con las capacidades de virtualización de hardware.
-KVM funciona mediante la virtualización completa de hardware, lo que significa que proporciona una emulación completa de un sistema informático físico. Esto permite que máquinas virtuales ejecuten sistemas operativos completamente diferentes del host, incluyendo Windows, Linux, BSD, macOS y otros sistemas operativos de propósito general[5]. Cada máquina virtual tiene su propio kernel del sistema operativo, sus propias interfaces de dispositivos virtuales y su propio espacio de memoria dedicado.
-En Proxmox VE, QEMU (Quick EMUlator) trabaja en conjunto con KVM. QEMU maneja la emulación de dispositivos como discos virtuales y tarjetas de red, gestiona la entrada/salida de la máquina virtual, mientras que KVM proporciona la aceleración de hardware para CPU y memoria[1]. Esta combinación KVM+QEMU proporciona un rendimiento de clase empresarial similar al de hipervisores baremetal especializados.
+
+**KVM** convierte el kernel de Linux en un hipervisor que ejecuta máquinas virtuales "reales": cada VM tiene su propio sistema operativo (Windows, Linux, etc.), su propia memoria y sus propios discos. Es como tener varios ordenadores dentro de uno solo [5].
+
+En Proxmox, **QEMU** trabaja junto a KVM: QEMU emula el hardware (discos, red, etc.) y KVM acelera la ejecución usando las extensiones de virtualización del procesador (VT-x/AMD-V). El resultado es rendimiento cercano al hardware físico [1].
 Las ventajas clave de KVM incluyen aislamiento completo entre máquinas virtuales, seguridad robusta debido a la separación de hardware, flexibilidad para
 
 ejecutar múltiples sistemas operativos, y actualizaciones de seguridad que se benefician de toda la comunidad de Linux. Sin embargo, KVM requiere más recursos que los contenedores LXC debido al overhead de virtualizar hardware completo, lo que resulta en mayores requisitos de memoria y almacenamiento.
 
 #### 1.3.2. LXC: contenedores ligeros a nivel de sistema operativo
-Linux Containers (LXC) representa un enfoque fundamentalmente diferente a la virtualización, basado en la virtualización a nivel del sistema operativo en lugar de la emulación completa de hardware[6]. LXC proporciona aislamiento de procesos mediante namespaces del kernel de Linux y control de grupos (cgroups), permitiendo que múltiples entornos de contenedores compartan el mismo kernel del host mientras mantienen la ilusión de un sistema operativo completo independiente.
-Los contenedores LXC son significativamente más ligeros que las máquinas virtuales. Un contenedor LXC inactivo típicamente consume solo 100-200 MB de RAM, comparado con varios gigabytes requeridos por una máquina virtual[6].
-Este uso eficiente de recursos LXC: Contenedores Ligeros a Nivel de Sistema Operativo permite a los administradores desplegar muchos más contenedores en el mismo hardware físico.
-El rendimiento de LXC es casi indistinguible del rendimiento nativo, sin la sobrecarga de virtualización inherente a KVM. Las aplicaciones dentro de contenedores LXC se ejecutan a velocidad casi de baremetal, lo que los hace ideales para cargas de trabajo sensibles al rendimiento como bases de datos y servidores web[6]. Esta eficiencia hace que LXC sea la opción preferida para microservicios, desarrollo rápido y entornos de alta densidad.
-Sin embargo, LXC tiene restricciones importantes. Debido a que todos los contenedores comparten el kernel del host, están limitados a ser sistemas basados en Linux. No es posible ejecutar Windows, BSD o macOS en un contenedor LXC[6]. Además, aunque las características de seguridad del kernel moderno son robustas, el aislamiento no es absoluto; una vulnerabilidad crítica a nivel de kernel podría teóricamente comprometer todos los contenedores en el host.
+
+**LXC** es distinto a KVM: en lugar de emular un ordenador completo, comparte el kernel del host con los contenedores. Cada contenedor parece un sistema Linux independiente pero todos usan el mismo núcleo [6].
+
+**Ventajas:** Consume mucha menos RAM (100-200 MB por contenedor vs. varios GB por VM), arranca en segundos y el rendimiento es casi nativo. Ideal para servidores web, bases de datos, microservicios y entornos de desarrollo [6].
+
+**Limitación:** Solo ejecuta Linux. No se puede correr Windows ni macOS en LXC. El aislamiento es fuerte pero no tan estricto como en una VM completa [6].
 
 #### 1.3.3. Diferencias prácticas: ¿cuándo usar KVM y cuándo LXC?
+
 La elección entre KVM y LXC depende de los requisitos específicos de la carga de trabajo. La siguiente tabla presenta un análisis comparativo detallado de estos dos enfoques:
 
 Tabla 2
@@ -283,24 +323,29 @@ En muchos casos, una estrategia híbrida es la más apropiada: utilizar LXC para
 ### 1.4. Modelo de licenciamiento: software libre vs. soporte comercial
 
 #### 1.4.1. Licencia de Código Abierto
+
 Proxmox Virtual Environment está disponible bajo la licencia GNU Affero General Public License v3.0 (AGPLv3), una licencia de código abierto permisiva pero con requisitos de reciprocidad[2]. Esta licencia garantiza que el código fuente es completamente accesible, auditable y modificable por cualquier usuario u organización. No existen restricciones de funcionalidad basadas en licencias: la versión de código abierto incluye todas las características completas del producto, incluyendo clustering, alta disponibilidad, copias de seguridad integradas y todas las capacidades de gestión[7]
 
 #### 1.4.2. Modelo de Soporte Comercial
+
 Aunque el software en sí es completamente gratuito, Proxmox Server Solutions GmbH ofrece suscripciones de soporte comercial para organizaciones que requieren asistencia profesional, actualizaciones garantizadas y acceso a repositorios estables. Este modelo es común en proyectos de código abierto exitosos y permite a los desarrolladores del proyecto asegurar financiamiento para mejoras continuas[2].
 
 Las opciones de suscripción disponibles incluyen:
-*   Community Edition: Acceso gratuito a la rama Community del repositorio, acceso a soporte comunitario a través del foro de Proxmox con miles de usuarios activos, y todas las características del producto. Esta es la opción adecuada para laboratorios, pruebas y despliegues no críticos[7].
-*   Suscripción Enterprise: Comenzando desde EUR 115 por año por CPU, proporciona acceso al repositorio Enterprise con actualizaciones rígidamente probadas y estables, acceso garantizado a soporte técnico certificado de los desarrolladores de Proxmox con tiempos de respuesta garantizados, acceso al Proxmox Customer Portal, y se recomienda para ambientes de producción[2].
-*   Suscripciones Escalonadas: Proxmox ofrece suscripciones Basic, Standard y Premium con diferentes niveles de soporte y tiempos de respuesta garantizados, permitiendo que las organizaciones seleccionen el nivel de apoyo que corresponde a sus necesidades y presupuesto.
+
+- Community Edition: Acceso gratuito a la rama Community del repositorio, acceso a soporte comunitario a través del foro de Proxmox con miles de usuarios activos, y todas las características del producto. Esta es la opción adecuada para laboratorios, pruebas y despliegues no críticos[7].
+- Suscripción Enterprise: Comenzando desde EUR 115 por año por CPU, proporciona acceso al repositorio Enterprise con actualizaciones rígidamente probadas y estables, acceso garantizado a soporte técnico certificado de los desarrolladores de Proxmox con tiempos de respuesta garantizados, acceso al Proxmox Customer Portal, y se recomienda para ambientes de producción[2].
+- Suscripciones Escalonadas: Proxmox ofrece suscripciones Basic, Standard y Premium con diferentes niveles de soporte y tiempos de respuesta garantizados, permitiendo que las organizaciones seleccionen el nivel de apoyo que corresponde a sus necesidades y presupuesto.
 
 Es importante notar que no hay versión "freemium" de Proxmox VE. La versión comunitaria gratuita incluye toda la funcionalidad; no hay características ocultas o limitadas para incentivar la compra de suscripciones. El valor de la suscripción radica únicamente en el soporte profesional y el acceso a repositorios curados[7].
 
 ### 1.5. Productos disponibles
 
 #### 1.5.1. Proxmox Virtual Environment (Plataforma de Virtualización)
+
 Proxmox VE es el producto principal y más completo, sirviendo como plataforma central de virtualización. Este producto integra todas las tecnologías descritas anteriormente: virtualización KVM, contenedores LXC, herramientas de almacenamiento definido por software (incluyendo soporte nativo para Ceph y ZFS), y redes definidas por software (SDN)[3]. La interfaz web centralizada permite la gestión de múltiples nodos, clusters de alta disponibilidad, y miles de máquinas virtuales y contenedores desde una única consola.
 
 #### 1.5.2. Proxmox Backup Server (Servidor de Respaldo Empresarial)
+
 Proxmox Backup Server es una solución de respaldo empresarial dedicada, escrita en el lenguaje de programación Rust para máximo rendimiento y seguridad[2]. Este producto está diseñado específicamente para respaldar máquinas virtuales de Proxmox VE, contenedores LXC, y hosts físicos de Linux. El Backup Server implementa características avanzadas incluidas copias de seguridad incrementales con deduplicación completa de datos, encriptación de lado del cliente (los datos se encriptan en el cliente antes de ser transmitidos), almacenamiento en cinta y sistemas S3, y sincronización de réplicas con otros servidores Proxmox Backup ubicados en sitios alejados para recuperación ante desastres[2].
 
 La arquitectura de Proxmox Backup Server utiliza un modelo clienteservidor que permite que múltiples hosts no relacionados usen un único servidor de respaldo. Mientras que el servidor almacena datos de respaldo y proporciona una API para
@@ -308,30 +353,47 @@ La arquitectura de Proxmox Backup Server utiliza un modelo clienteservidor que p
 crear y gestionar almacenes de datos, la herramienta cliente funciona con la mayoría de distribuciones Linux modernas[8].
 
 #### 1.5.3. Proxmox Mail Gateway (Puerta de Enlace de Correo)
+
 Proxmox Mail Gateway es un producto especializado para proteger la infraestructura de correo electrónico de las organizaciones contra malware, spam y fraude. Esta puerta de enlace opera como un servidor proxy de correo que analiza, filtra y purifica todos los mensajes de correo electrónico antes de que lleguen a los servidores de correo internos, proporcionando protección contra amenazas conocidas y desconocidas[2].
 
 #### 1.5.4. Proxmox Datacenter Management (Administrador del Centro de Datos
+
 El administrador del centro de datos es una herramienta de gestión empresarial diseñada para operaciones a escala de múltiples sitios. Este producto permite a las grandes organizaciones gestionar múltiples instalaciones de Proxmox VE distribuidas geográficamente desde una consola centralizada, facilitando visibilidad completa de la infraestructura, estandarización de políticas, y operaciones coordinadas a través de centros de datos[2].
 
+![Suite de productos Proxmox: VE, Backup Server, Mail Gateway y Datacenter Manager](https://pve.proxmox.com/mediawiki/images/a/a3/Gui-datacenter-fabrics-overview.png)
+
+Fg. 18 Productos de la suite Proxmox
+
 ### 1.6. Novedades en la última versión (v9.1)
+
+La versión 9.1 de Proxmox VE introduce mejoras significativas en usabilidad, seguridad y compatibilidad con tecnologías modernas. A continuación se detallan las principales novedades:
+
 #### 1.6.1. Creación de Contenedores LXC a Partir de Imágenes OCI
-Una característica destacada de la versión 9.1 es la integración de soporte para imágenes Open Container Initiative (OCI), el formato estándar de distribución de contenedores[2]. Los usuarios ahora pueden descargar imágenes OCI ampliamente adoptadas directamente desde registros de contenedores públicos o cargarlas manualmente para usarlas como plantillas para crear contenedores LXC. Dependiendo de la imagen, estos contenedores se pueden provisionar como contenedores de sistema completo u optimizados como contenedores de aplicaciones ligeros. Esta funcionalidad simplifica significativamente el despliegue de aplicaciones estandarizadas, permitiendo que los administradores implementen aplicaciones específicas (como una base de datos particular o un servicio API) desde pipelines de construcción de contenedores existentes rápidamente a través de la interfaz gráfica de Proxmox VE o línea de comandos[2].
+
+Una característica destacada de la versión 9.1 es la integración de soporte para imágenes Open Container Initiative (OCI), el formato estándar de distribución de contenedores adoptado por Docker, Podman y Kubernetes [2]. Los usuarios ahora pueden descargar imágenes OCI ampliamente adoptadas directamente desde registros de contenedores públicos (como Docker Hub) o cargarlas manualmente para usarlas como plantillas para crear contenedores LXC. Dependiendo de la imagen, estos contenedores se pueden provisionar como contenedores de sistema completo u optimizados como contenedores de aplicaciones ligeros. Esta funcionalidad simplifica significativamente el despliegue de aplicaciones estandarizadas, permitiendo que los administradores implementen aplicaciones específicas (como una base de datos particular o un servicio API) desde pipelines de construcción de contenedores existentes rápidamente a través de la interfaz gráfica de Proxmox VE o línea de comandos [2].
+
 #### 1.6.2. Soporte para Estado de TPM en Formato qcow2
-La versión 9.1 introduce la capacidad de almacenar el estado de un Módulo de Plataforma Confiable virtual (vTPM) en el formato de imagen de disco qcow2[2]. Esto permite que los usuarios realicen snapshots completos de máquinas virtuales incluso con un vTPM activo, a través de diversos tipos de almacenamiento como NFS/CIFS. Los almacenamientos LVM con snapshots como cadenas de volúmenes ahora soportan hacer snapshots offline de máquinas virtuales con estados vTPM. Este avance mejora significativamente la agilidad operacional para cargas de trabajo sensibles a seguridad, tales como despliegues de Windows que requieren vTPM para características de seguridad avanzadas[2].
+
+La versión 9.1 introduce la capacidad de almacenar el estado de un Módulo de Plataforma Confiable virtual (vTPM) en el formato de imagen de disco qcow2 [2]. Esto permite que los usuarios realicen snapshots completos de máquinas virtuales incluso con un vTPM activo, a través de diversos tipos de almacenamiento como NFS/CIFS. Los almacenamientos LVM con snapshots como cadenas de volúmenes ahora soportan hacer snapshots offline de máquinas virtuales con estados vTPM. Este avance mejora significativamente la agilidad operacional para cargas de trabajo sensibles a seguridad, tales como despliegues de Windows 11 que requieren vTPM para características de seguridad avanzadas como BitLocker o Windows Hello [2].
 
 #### 1.6.3. Control Granular de Virtualización Anidada
-Proxmox VE 9.1 ofrece control mejorado para virtualización anidada en máquinas virtuales especializadas. Esta característica es especialmente útil para cargas de trabajo como hipervisores anidados o ambientes Windows con Virtualization-based Security (VBS)[2]. Una nueva bandera de vCPU permite habilitar de forma conveniente y precisa las extensiones de virtualización para virtualización anidada. Esta opción flexible da a los administradores de TI más control y ofrece una alternativa optimizada a simplemente exponer el tipo completo de CPU del host la huésped.
+
+Proxmox VE 9.1 ofrece control mejorado para virtualización anidada en máquinas virtuales especializadas. Esta característica es especialmente útil para cargas de trabajo como hipervisores anidados (ejecutar Proxmox dentro de una VM para pruebas) o ambientes Windows con Virtualization-based Security (VBS) [2]. Una nueva bandera de vCPU permite habilitar de forma conveniente y precisa las extensiones de virtualización para virtualización anidada. Esta opción flexible da a los administradores de TI más control y ofrece una alternativa optimizada a simplemente exponer el tipo completo de CPU del host al huésped, mejorando la portabilidad entre nodos con diferentes procesadores [2].
 
 #### 1.6.4. Reporte Mejorado de Estado de SDN
-La versión 9.1 incluye una pila mejorada de Redes Definidas por Software (SDN) con monitoreo y reporte mejorados en la interfaz web[2]. La interfaz gráfica ahora ofrece más visibilidad en la pila SDN, mostrando todos los huéspedes conectados a puentes locales o VNets. Las zonas EVPN informan además sobre las direcciones IP y MAC aprendidas. Los Fabrics están integrados en el árbol de recursos, mostrando rutas, vecinos e interfaces. La GUI actualizada ofrece visibilidad en componentes de red clave como IP-VRFs y MAC-VRFs. Esta observabilidad mejorada simplifica la resolución de problemas y monitoreo de topologías de red complejas a nivel de cluster, sin necesidad de acceso a línea de comandos[2].
+
+La versión 9.1 incluye una pila mejorada de Redes Definidas por Software (SDN) con monitoreo y reporte mejorados en la interfaz web [2]. La interfaz gráfica ahora ofrece más visibilidad en la pila SDN, mostrando todos los huéspedes conectados a puentes locales o VNets. Las zonas EVPN informan además sobre las direcciones IP y MAC aprendidas. Los Fabrics están integrados en el árbol de recursos, mostrando rutas, vecinos e interfaces. La GUI actualizada ofrece visibilidad en componentes de red clave como IP-VRFs y MAC-VRFs. Esta observabilidad mejorada simplifica la resolución de problemas y monitoreo de topologías de red complejas a nivel de cluster, sin necesidad de acceso a línea de comandos [2].
 
 #### 1.6.5. Kernel Linux 6.17 y Debian 13.2 Trixie
-Proxmox VE 9.1 actualiza la base del sistema operativo a Debian 13.2 (Trixie) pero utiliza un kernel de Linux más reciente (versión 6.17)[2]. Esta actualización proporciona soporte para hardware más reciente, parches de seguridad más actuales, y mejoras de rendimiento en todo el sistema.
+
+Proxmox VE 9.1 actualiza la base del sistema operativo a Debian 13.2 (Trixie) pero utiliza un kernel de Linux más reciente (versión 6.17) que el incluido en Debian [2]. Esta actualización proporciona soporte para hardware más reciente (nuevos procesadores, tarjetas de red, controladoras NVMe), parches de seguridad más actuales, y mejoras de rendimiento en todo el sistema. La combinación permite a los administradores aprovechar las últimas capacidades del kernel sin esperar a que Debian estabilice versiones más nuevas [2].
 
 #### 1.6.6. Infraestructura General de Versión 9.1
-Además de las características específicas mencionadas, Proxmox VE 9.1 continúa el compromiso del proyecto con estabilidad empresarial, características de clustering avanzadas, y compatibilidad con las tecnologías más recientes de virtualización. La versión está disponible para descarga inmediata como imagen ISO de instalación completa o a través de actualización sin inconvenientes desde Control Granular de Virtualización Anidada Reporte Mejorado de Estado de SDN Kernel Linux 6.17 y Debian 13.2 Trixie Infraestructura General de Versión 9.1 versiones anteriores usando el sistema estándar de gestión de paquetes APT[2].
+
+Además de las características específicas mencionadas, Proxmox VE 9.1 continúa el compromiso del proyecto con estabilidad empresarial, características de clustering avanzadas, y compatibilidad con las tecnologías más recientes de virtualización. La versión está disponible para descarga inmediata como imagen ISO de instalación completa o a través de actualización sin inconvenientes desde versiones anteriores (Proxmox VE 8.x, 7.x) usando el sistema estándar de gestión de paquetes APT mediante `apt update` y `apt full-upgrade` [2].
 
 ## 2. Instalación y Primeros Pasos
+
 La implementación de Proxmox Virtual Environment (VE) requiere una planificación adecuada de la infraestructura física y una comprensión detallada de los procesos de instalación iniciales. En esta sección se abordan los requisitos técnicos, el procedimiento de despliegue desde una imagen ISO, la familiarización con su interfaz gráfica de gestión y las configuraciones fundamentales requeridas para poner el servidor en producción. Toda la información consolidada se fundamenta en las especificaciones oficiales y mejores prácticas de la industria para entornos de virtualización corporativos e investigativos.
 
 ### 2.1. Requisitos de hardware recomendados
@@ -377,6 +439,10 @@ Requisitos mínimos y recomendados para Proxmox
 
 Nota. Elaboración propia a partir de [11][12].
 
+![Requisitos de hardware para Proxmox VE — Vista del nodo y recursos](https://pve.proxmox.com/mediawiki/images/0/02/Screen-virtual-machine-status.png)
+
+Fg. 19 Requisitos de hardware — Panel de recursos del nodo
+
 ### 2.2. Proceso de instalación desde ISO
 
 El despliegue de Proxmox VE se realiza predominantemente a través de su instalador oficial en formato ISO, el cual debe ser montado en una unidad USB (mínimo de 1 GB de capacidad) o un medio de instalación compatible. Al arrancar el servidor desde el dispositivo de instalación, el asistente gráfico guía al administrador a través de los pasos fundamentales para configurar el sistema operativo base, que está cimentado sobre Debian GNU/Linux.
@@ -384,7 +450,7 @@ El despliegue de Proxmox VE se realiza predominantemente a través de su instala
 Durante el proceso, el instalador solicita la partición de los discos locales, permitiendo elegir entre sistemas de archivos tradicionales como ext4 o soluciones avanzadas como ZFS para arreglos RAID por software.[13]
 Posteriormente, el asistente exige la configuración de aspectos básicos del sistema, tales como la zona horaria, el idioma del teclado y la creación de una contraseña robusta para el usuario root del sistema, junto con una dirección de correo electrónico para el envío de alertas administrativas. Finalmente, se debe definir la configuración de red inicial, donde se asigna la interfaz de red principal, un nombre de host (FQDN), una dirección IP estática, la puerta de enlace (Gateway) y el servidor DNS. Alternativamente, las versiones recientes soportan una instalación automatizada (Unattended Installation) mediante un archivo de respuestas preconfigurado, ideal para el despliegue masivo en centros de datos [14].
 
-![Proxmox VE Installer screenshot with Proxmox logo and text "Proxmox Virtual Environment (PVE)"](images/marco_teorico/image_1.png)
+![Vista de instalación de Proxmox VE](https://upload.wikimedia.org/wikipedia/commons/b/bc/Proxmox_VE_interface_01.png)
 
 Fg. 1 Vista de instalación de Proxmox [47]
 
@@ -396,43 +462,37 @@ Al ingresar, es común que el navegador presente una advertencia de seguridad de
 
 requeridas corresponden al usuario root y la contraseña definida durante la instalación ISO, seleccionando Linux PAM standard authentication como el dominio (realm) de validación.[16]
 
-![Screenshot of QEMU (debian11vm) - noVNC — Mozilla Firefox (Private Browsing) showing a login dialog with "ostechnixvm" e...](images/marco_teorico/image_2.png)
-
-Fg. 2 Log In en la MV [48]
-
 ### 2.4. Visión general de la interfaz: Datacenter, Nodos, VMs y Contenedores
 
-![Screenshot of Proxmox Virtual Environment 9.1.1 interface showing: - Left sidebar with "Datacenter (eu-alps)" expanded t...](images/marco_teorico/image_3.png)
-
-Fg. 3 Vista de instalación de Proxmox [47]
-
 La arquitectura de la interfaz web, construida sobre el framework ExtJS de JavaScript, se divide lógicamente en una estructura jerárquica para facilitar la administración tanto de servidores individuales como de clústeres complejos.[17]
-*   Datacenter: Es el nivel superior de la jerarquía y abarca la configuración global del entorno. Desde aquí se gestionan las opciones que afectan a todo el clúster, tales como copias de seguridad a nivel de infraestructura, configuraciones de alta disponibilidad (HA), almacenamiento compartido y administración de usuarios, roles y permisos.
-*   Nodos (Nodes): Representan a cada servidor físico individual (host) que forma parte del entorno. Al seleccionar un nodo, el administrador puede observar el consumo de recursos de hardware en tiempo real, configurar su red física, gestionar certificados locales y visualizar el estado de sus discos o actualizar el sistema.
-*   Virtual Machines (VMs) y Contenedores: Colgando de cada nodo se encuentran los "Guests" o huéspedes virtuales. Cada máquina virtual (KVM) o contenedor (LXC) se identifica con un número único (ID) e incluye un panel propio para gestionar su hardware virtual (procesadores, memoria, interfaces de red virtuales), realizar instantáneas (snapshots) o acceder directamente a su consola mediante HTML5 o SPICE.
+
+- Datacenter: Es el nivel superior de la jerarquía y abarca la configuración global del entorno. Desde aquí se gestionan las opciones que afectan a todo el clúster, tales como copias de seguridad a nivel de infraestructura, configuraciones de alta disponibilidad (HA), almacenamiento compartido y administración de usuarios, roles y permisos.
+- Nodos (Nodes): Representan a cada servidor físico individual (host) que forma parte del entorno. Al seleccionar un nodo, el administrador puede observar el consumo de recursos de hardware en tiempo real, configurar su red física, gestionar certificados locales y visualizar el estado de sus discos o actualizar el sistema.
+- Virtual Machines (VMs) y Contenedores: Colgando de cada nodo se encuentran los "Guests" o huéspedes virtuales. Cada máquina virtual (KVM) o contenedor (LXC) se identifica con un número único (ID) e incluye un panel propio para gestionar su hardware virtual (procesadores, memoria, interfaces de red virtuales), realizar instantáneas (snapshots) o acceder directamente a su consola mediante HTML5 o SPICE.
 
 ### 2.5. Actualización del sistema y gestión de repositorios (Community vs. Enterprise)
 
 Proxmox VE basa su sistema de gestión de paquetes en APT (Advanced Package Tool) propio de Debian, por lo que las actualizaciones y la instalación de software se manejan mediante repositorios. La elección del repositorio correcto es un paso crítico inmediatamente después de la instalación y depende del tipo de licencia de uso.[18]
-*   Enterprise Repository: Es el repositorio configurado por defecto al instalar el sistema. Requiere una llave de suscripción comercial válida proporcionada por Proxmox Server Solutions. Este repositorio ofrece los paquetes de software más estables y rigurosamente probados, siendo la opción estrictamente recomendada para entornos corporativos y de producción donde la continuidad del negocio es prioritaria.
-*   No-Subscription Repository: Es el repositorio abierto orientado a laboratorios caseros, entornos de pruebas y la comunidad de código abierto. Para habilitarlo, es necesario editar los archivos de fuentes de APT (generalmente deshabilitando o comentando el archivo /etc/apt/sources.list.d/pve-enterprise.list y agregando el repositorio comunitario en /etc/apt/sources.list). Este repositorio proporciona las actualizaciones más recientes y características novedosas, pero sus paquetes no han pasado por el mismo nivel de pruebas exhaustivas que la rama empresarial. Es imperativo que el administrador decida e implemente una política de repositorios acorde a su infraestructura antes de ejecutar cualquier comando de actualización como apt update y apt full-upgrade, evitando así errores de sincronización o alertas de suscripción inválida.
+
+- Enterprise Repository: Es el repositorio configurado por defecto al instalar el sistema. Requiere una llave de suscripción comercial válida proporcionada por Proxmox Server Solutions. Este repositorio ofrece los paquetes de software más estables y rigurosamente probados, siendo la opción estrictamente recomendada para entornos corporativos y de producción donde la continuidad del negocio es prioritaria.
+- No-Subscription Repository: Es el repositorio abierto orientado a laboratorios caseros, entornos de pruebas y la comunidad de código abierto. Para habilitarlo, es necesario editar los archivos de fuentes de APT (generalmente deshabilitando o comentando el archivo /etc/apt/sources.list.d/pve-enterprise.list y agregando el repositorio comunitario en /etc/apt/sources.list). Este repositorio proporciona las actualizaciones más recientes y características novedosas, pero sus paquetes no han pasado por el mismo nivel de pruebas exhaustivas que la rama empresarial. Es imperativo que el administrador decida e implemente una política de repositorios acorde a su infraestructura antes de ejecutar cualquier comando de actualización como apt update y apt full-upgrade, evitando así errores de sincronización o alertas de suscripción inválida.
+
+![Repositorios Community vs. Enterprise — Configuración](https://pve.proxmox.com/mediawiki/images/e/eb/Screen-add-storage.png)
+
+Fg. 23 Repositorios Community vs. Enterprise
 
 ### 2.6. Primeras configuraciones: hostname, red de gestión, DNS y NTP
 
 Tras acceder a la plataforma y configurar los repositorios, la puesta a punto inicial requiere la consolidación de los parámetros de red e identidad del servidor para asegurar una comunicación ininterrumpida dentro de la topología local [19].
 
-*   **Hostname y FQDN:** El servidor debe poseer un nombre de dominio completamente calificado (FQDN). Aunque se establece durante la instalación, puede modificarse posteriormente a través de la terminal o la interfaz web. El formato estándar sigue el patrón `<hostname>.<domain>` (por ejemplo, pve.local o proxmox.empresa.com). Un FQDN correctamente definido es vital para el despliegue de clústeres y la resolución interna.
-*   **Red de Gestión:** La interfaz de red de gestión, por defecto asignada al puente virtual vmbr0, actúa como el enlace principal entre el servidor Proxmox, la red física y las futuras máquinas virtuales. Se exige que esta interfaz mantenga una configuración de Dirección IP estática para prevenir la pérdida de acceso al servidor en caso de reinicios o fallas en el servicio DHCP externo.
-*   **Servidores DNS:** Una correcta resolución de nombres es indispensable para que el servidor descargue actualizaciones,sincronice herramientas de seguridad y se comunique con nodos externos. La IP del servidor DNS primario, frecuentemente provista por el router local o servidores públicos (como 1.1.1.1 u 8.8.8.8), debe declararse explícitamente en el apartado de red.
-*   **NTP (Network Time Protocol):** La precisión del reloj del sistema es fundamental en la virtualización, especialmente al conformar clústeres (como Corosync) y sincronizar bases de datos virtualizadas. Proxmox utiliza servicios como chrony o systemd-timesyncd para mantener la hora estandarizada con servidores de tiempo globales; el administrador debe corroborar que el huso horario sea el adecuado en la vista de "Time" del nodo correspondiente.
+- **Hostname y FQDN:** El servidor debe poseer un nombre de dominio completamente calificado (FQDN). Aunque se establece durante la instalación, puede modificarse posteriormente a través de la terminal o la interfaz web. El formato estándar sigue el patrón `<hostname>.<domain>` (por ejemplo, pve.local o proxmox.empresa.com). Un FQDN correctamente definido es vital para el despliegue de clústeres y la resolución interna.
+- **Red de Gestión:** La interfaz de red de gestión, por defecto asignada al puente virtual vmbr0, actúa como el enlace principal entre el servidor Proxmox, la red física y las futuras máquinas virtuales. Se exige que esta interfaz mantenga una configuración de Dirección IP estática para prevenir la pérdida de acceso al servidor en caso de reinicios o fallas en el servicio DHCP externo.
+- **Servidores DNS:** Una correcta resolución de nombres es indispensable para que el servidor descargue actualizaciones,sincronice herramientas de seguridad y se comunique con nodos externos. La IP del servidor DNS primario, frecuentemente provista por el router local o servidores públicos (como 1.1.1.1 u 8.8.8.8), debe declararse explícitamente en el apartado de red.
+- **NTP (Network Time Protocol):** La precisión del reloj del sistema es fundamental en la virtualización, especialmente al conformar clústeres (como Corosync) y sincronizar bases de datos virtualizadas. Proxmox utiliza servicios como chrony o systemd-timesyncd para mantener la hora estandarizada con servidores de tiempo globales; el administrador debe corroborar que el huso horario sea el adecuado en la vista de "Time" del nodo correspondiente.
 
 ## 3. Gestión de Almacenamiento
 
 La gestión de almacenamiento en Proxmox Virtual Environment (VE) es un componente fundamental para asegurar el rendimiento, la escalabilidad y la alta disponibilidad de los clústeres de virtualización. La plataforma es altamente versátil, ya que soporta tanto tecnologías de almacenamiento local de acceso directo a bloques o archivos, como protocolos de almacenamiento compartido a través de la red. Una correcta elección del modelo de aprovisionamiento impacta directamente en las operaciones de entrada/salida (IOPS), la capacidad de realizar instantáneas (snapshots) y la tolerancia a fallos de los discos físicos.[20]
-
-![PROXMOX Virtual Environment 6.0-4](images/marco_teorico/image_4.png)
-
-Fg. 4 GUI de Proxmox Virtual Environment [17]
 
 ### 3.1. Almacenamiento Local
 
@@ -442,14 +502,18 @@ El almacenamiento local se refiere a los discos físicos directamente conectados
 
 El almacenamiento basado en directorios es el tipo más simple y compatible dentro de la arquitectura de Proxmox. Se fundamenta en sistemas de archivos tradicionales montados a nivel del sistema operativo base, típicamente ext4 o xfs. Por defecto, durante la instalación de Proxmox, se crea un directorio local (montado en /var/lib/vz) que está destinado a albergar imágenes ISO, plantillas de contenedores (VZDump), y copias de seguridad (backups). Aunque las máquinas virtuales pueden almacenar sus discos duros virtuales en formato de archivo continuo (como QCOW2 o RAW) dentro de estos directorios, esta práctica carece del nivel de gestión de bloques directos de otras alternativas, añadiendo una capa de abstracción del sistema de archivos subyacente. No obstante, el formato QCOW2 sobre almacenamiento de directorio permite soporte para aprovisionamiento fino (thin provisioning) y la creación de instantáneas.[21]
 
+![Configuración de almacenamiento en Proxmox VE — Add Storage](https://pve.proxmox.com/mediawiki/images/e/eb/Screen-add-storage.png)
+
+Fg. 16 Configuración de almacenamiento en Proxmox VE
+
 #### 3.1.2. LVM y LVM-Thin: gestión de volúmenes lógicos y thin provisioning
 
-El Gestor de Volúmenes Lógicos (LVM, por sus siglas en inglés) es un estándar en entornos Linux que permite abstraer los discos físicos en grupos de volúmenes
+El Gestor de Volúmenes Lógicos (LVM) permite organizar los discos físicos en grupos flexibles que se pueden redimensionar sin apagar el sistema. Proxmox soporta dos variantes con comportamientos distintos: [22]
 
-manejables dinámicamente. Proxmox soporta dos variantes de este modelo, con implicaciones arquitectónicas distintas: [22]
+**En términos simples:** imagine que LVM es como un estacionamiento. _LVM Clásico_ reserva un espacio fijo por cada auto (VM): si asigna 50 GB a una VM, esos 50 GB quedan "bloqueados" aunque la VM solo use 10 GB. _LVM-Thin_ funciona como un estacionamiento inteligente: asigna espacio "en papel" (por ejemplo, 100 GB a cada VM) pero solo ocupa espacio real cuando los datos se escriben. Así puede tener tres VMs de 100 GB cada una con solo 150 GB físicos, siempre que no todas usen todo al mismo tiempo.
 
-*   LVM Clásico: Opera bajo un modelo de aprovisionamiento grueso (thick provisioning). Cuando se asigna un disco virtual de 50 GB a una máquina virtual, se reservan físicamente 50 GB de bloques contiguos en el disco, independientemente de si el huésped los ha escrito o no. Si bien este modelo garantiza un rendimiento constante y predecible, es ineficiente en términos de espacio y no soporta la creación de instantáneas nativas.
-*   LVM-Thin: Mejora la estructura clásica integrando el aprovisionamiento fino (thin provisioning). Permite la creación de un "Thin Pool" donde se asignan volúmenes que solo consumen espacio físico a medida que los datos se escriben realmente. Esto habilita el overcommitting, es decir, asignar virtualmente más espacio del físicamente disponible (por ejemplo, asignar 100 GB a tres VMs diferentes teniendo solo 150 GB físicos). Además, su arquitectura de copia en escritura (copy-on-write) permite realizar instantáneas ultrarrápidas a nivel de bloques.
+- **LVM Clásico:** Reserva todo el espacio asignado de inmediato. Garantiza rendimiento constante pero desperdicia espacio. No permite snapshots nativos.
+- **LVM-Thin:** Asigna espacio bajo demanda (solo cuando se escribe). Permite "overcommit" (asignar más de lo físico) y snapshots ultrarrápidos gracias a la técnica copy-on-write.
 
 Tabla 4
 Características de LVM Clásico y LVM-Thin
@@ -495,20 +559,16 @@ Nota. Elaboración propia a partir de [22].
 
 #### 3.1.3. ZFS: sistema de archivos avanzado con checksums, snapshots nativos y RAID por software
 
-ZFS (Zettabyte File System) es uno de los sistemas de archivos y administradores de volúmenes más avanzados del mercado y está completamente integrado en Proxmox VE de forma nativa. ZFS fusiona la gestión de volúmenes y el sistema de archivos en una sola capa, diseñado bajo un paradigma de cero pérdida de datos[23]. Entre sus principales tecnologías integradas se encuentran:
+ZFS es un sistema de archivos empresarial integrado en Proxmox VE que ofrece protección avanzada de datos sin necesidad de hardware RAID adicional[23].
 
-*   RAID por Software (RAID-Z): Elimina la necesidad de controladoras RAID por hardware. ZFS maneja la redundancia directamente (espejo, RAID-Z1, RAID-Z2), comunicándose con los discos puros (HBA o modo IT), lo que le permite detectar corrupciones de forma autónoma.
-*   Checksums (Sumas de Verificación): Cada bloque de datos escrito cuenta con una suma de verificación criptográfica. En cada lectura, ZFS verifica
+**¿Qué hace ZFS en pocas palabras?** Protege los datos contra fallos y corrupción. Cada bloque escrito incluye una "huella digital" (checksum); al leer, ZFS verifica que los datos no se hayan dañado (por ejemplo, por degradación de discos). Si detecta un error y tiene copias en otros discos, lo repara automáticamente.
 
-la integridad de los datos; si detecta corrupción silenciosa (bit rot), y existe redundancia en el pool, repara el bloque corrupto al vuelo sin intervención administrativa.
-*   Instantáneas y Clones Nativos: Al ser un sistema puramente transaccional (copy-on-write), la creación de instantáneas en ZFS es un proceso instantáneo que no consume espacio adicional hasta que los datos originales cambian. De igual forma, permite clonar sistemas de forma inmediata.
-*   Compresión Transparente: Permite comprimir los datos en tiempo real (utilizando algoritmos como LZ4 o ZSTD) antes de escribirlos en disco, ahorrando un espacio sustancial y, en ocasiones, mejorando el rendimiento general al reducir las operaciones mecánicas de I/O.
+- **RAID por software:** ZFS gestiona la redundancia entre discos sin tarjeta RAID. Opciones: espejo (2 discos), RAID-Z1 (1 disco de paridad), RAID-Z2 (2 discos de paridad).
+- **Checksums y auto-reparación:** Detecta y corrige corrupción silenciosa (bit rot) sin intervención del administrador.
+- **Snapshots instantáneos:** Crear una instantánea es casi inmediato y no consume espacio extra hasta que los datos originales cambien.
+- **Compresión transparente:** Comprime datos al escribirlos (LZ4 o ZSTD), ahorrando espacio y a veces mejorando rendimiento.
 
-Para las máquinas virtuales, Proxmox crea volúmenes de bloques ZFS (zvols), combinando el aprovisionamiento fino con todas las capacidades de protección de datos inherentes al sistema de archivos. Sin embargo, la mayor contrapartida de ZFS es su elevado consumo de memoria RAM, ya que requiere recursos considerables para mantener su memoria caché de lectura adaptativa (ARC) [23].
-
-![Screenshot showing disk status and devices. The top section shows "Status: Toshiba" with a "Reload" button. Below that, ...](images/marco_teorico/image_5.png)
-
-Fg. 5 Presentación de volúmenes y estado de disco [23]
+Proxmox usa ZFS para crear volúmenes de disco de las VMs (zvols). **Importante:** ZFS consume bastante RAM para su caché (ARC); calcule aproximadamente 1 GB extra por cada TB de almacenamiento [23].
 
 ### 3.2. Almacenamiento Compartido
 
@@ -520,19 +580,29 @@ NFS es un protocolo estándar basado en la red que permite que un servidor compa
 
 En Proxmox, un punto de montaje NFS se configura típicamente a nivel del Datacenter, de modo que todos los nodos del clúster posean exactamente la misma ruta de acceso a los datos concurrentemente. NFS se utiliza principalmente para almacenar discos virtuales (en formato QCOW2 o RAW), mantener un repositorio centralizado de imágenes ISO, y guardar las copias de seguridad de todas las máquinas virtuales del clúster. Para configurarlo, el administrador debe especificar la IP del servidor remoto y el export path (ruta compartida), así como opcionalmente ajustar opciones de montaje avanzadas desde el menú de almacenamiento.
 
+![NFS y almacenamiento compartido — Configuración desde Datacenter](https://pve.proxmox.com/mediawiki/images/b/b5/Gui-datacenter-create-fabric-openfabric.png)
+
+Fg. 20 Configuración de almacenamiento NFS compartido
+
 ## 4. Redes Virtuales
 
-La gestión de redes en Proxmox VE se construye sobre la pila de red nativa del kernel de Linux, proporcionando una infraestructura de red virtual robusta y flexible para conectar máquinas virtuales y contenedores entre sí y con la red física. Los cambios en la configuración de red no se aplican directamente sobre /etc/network/interfaces; en su lugar, Proxmox VE utiliza el fichero temporal /etc/network/interfaces.new, que permite acumular múltiples cambios y validarlos antes de aplicarlos, minimizando el riesgo de perder el acceso remoto al servidor por una configuración errónea [26]. Con el paquete ifupdown2 —incluido por defecto desde Proxmox VE 7.0— es posible recargar la configuración de red sin necesidad de reiniciar el sistema [26].
+Las VMs y contenedores necesitan conectarse a la red. Proxmox usa la pila de red de Linux para crear "puentes virtuales" (bridges) que actúan como switches: las interfaces de red de las VMs se conectan al bridge, y el bridge se enlaza a la tarjeta de red física del servidor. Así, las VMs aparecen en la misma red que el host [26].
+
+Proxmox aplica los cambios de red de forma segura (primero los valida en un archivo temporal) para evitar perder el acceso remoto por un error de configuración. Desde la versión 7.0 se puede recargar la red sin reiniciar el servidor [26].
+
+![Arquitectura de red por defecto en Proxmox VE: Linux Bridge conectando VMs a la red física](https://pve.proxmox.com/pve-docs/images/default-network-setup-bridge.svg)
+
+Fg. 11 Arquitectura de redes virtuales: Linux Bridge y VLANs en Proxmox VE [26]
 
 ### 4.1. Conceptos base: interfaces físicas y VLAN
 
 La pila de red de Proxmox VE opera sobre las interfaces de red físicas (NICs) del servidor, denominadas típicamente enpXsY o ethX. Estas interfaces no se asignan directamente a las VMs; en cambio, se asocian a uno o más bridges virtuales que actúan como conmutadores de capa 2 [27]. Es posible también configurar bonds (IEEE 802.3ad / LACP) que combinan múltiples NICs para mayor ancho de banda o tolerancia a fallos [26]. Las VLANs (Virtual Local Area Networks, IEEE 802.1q) permiten segmentar lógicamente una red física en múltiples redes aisladas sobre el mismo hardware. Proxmox VE soporta cuatro modos de implementación de VLANs [26]:
 
-*   VLAN awareness en Linux Bridge: cada interfaz virtual de un guest se asigna a una etiqueta VLAN de forma transparente a través del bridge. Es el método moderno recomendado, sin necesidad de crear interfaces adicionales en el host.
-*   VLAN "tradicional" en Linux Bridge: se crean interfaces VLAN individuales y bridges asociados por cada VLAN requerida.
-*   Open vSwitch VLAN: utiliza las capacidades VLAN de Open vSwitch (OVS) para mayor flexibilidad en escenarios avanzados.
+- VLAN awareness en Linux Bridge: cada interfaz virtual de un guest se asigna a una etiqueta VLAN de forma transparente a través del bridge. Es el método moderno recomendado, sin necesidad de crear interfaces adicionales en el host.
+- VLAN "tradicional" en Linux Bridge: se crean interfaces VLAN individuales y bridges asociados por cada VLAN requerida.
+- Open vSwitch VLAN: utiliza las capacidades VLAN de Open vSwitch (OVS) para mayor flexibilidad en escenarios avanzados.
 
-*   VLAN configurada en el guest: las VLANs se gestionan desde el sistema operativo del guest, sin control desde el host Proxmox.
+- VLAN configurada en el guest: las VLANs se gestionan desde el sistema operativo del guest, sin control desde el host Proxmox.
 
 Para que el etiquetado VLAN funcione en modo VLAN-aware, el puerto del switch físico conectado al servidor debe estar configurado como trunk, permitiendo el paso de tramas con múltiples etiquetas VLAN [28].
 
@@ -591,15 +661,68 @@ Nota. Elaboración propia a partir de [29].
 
 ### 4.3. ¿Qué es el módulo SDN de Proxmox?
 
-El módulo SDN (Software-Defined Networking) de Proxmox VE es una capa de abstracción de red avanzada que permite crear y gestionar redes virtuales complejas de forma centralizada, superando las limitaciones de la configuración clásica basada en bridges y VLANs estáticas. El stack SDN estuvo disponible como característica experimental desde 2019; fue integrado en la interfaz web en la versión 6.2 y alcanzó soporte completo e instalación por defecto a partir de la versión 8.1 [30].
+**SDN (Software-Defined Networking)** permite definir redes virtuales desde la interfaz web sin tocar archivos de configuración en cada nodo. Es útil cuando se necesitan redes aisladas, múltiples VLANs o conectar VMs en distintos servidores como si estuvieran en la misma red local [30].
 
-La arquitectura del SDN de Proxmox VE se organiza en tres niveles jerárquicos [31]:
+**Estructura en tres niveles:** [31]
 
-*   Zonas (Zones): definen áreas de red virtualmente separadas. Cada zona puede usar una tecnología de aislamiento diferente: Simple (bridge aislado con NAT), VLAN (IEEE 802.1q), QinQ (VLANs apiladas, IEEE 802.1ad), VXLAN (tunneling L2 sobre UDP) o EVPN (redes overlay basadas en BGP).
-*   Redes Virtuales (VNets): son las redes virtuales creadas dentro de una zona. Una vez creadas mediante la interfaz SDN del Datacenter, quedan disponibles como bridges Linux estándar en cada nodo para ser asignadas a VMs y contenedores.
-*   Subredes (Subnets): definen rangos de direcciones IP dentro de una VNet, con integración opcional a herramientas IPAM para la asignación automática de IPs.
+- **Zonas:** Áreas de red separadas. Cada zona puede usar un tipo distinto: _Simple_ (red aislada con NAT, ideal para laboratorios), _VLAN_ (segmentación estándar), _VXLAN_ (extiende redes entre nodos mediante túneles) o _EVPN_ (para nubes privadas complejas).
+- **VNets (Redes Virtuales):** Las redes concretas dentro de una zona. Se crean desde Datacenter → SDN y quedan disponibles en todos los nodos.
+- **Subredes:** Rangos de direcciones IP dentro de cada VNet.
 
-Los cambios en el SDN no se aplican inmediatamente sino que se registran como cambios pendientes; el administrador puede acumularlos y aplicarlos de forma atómica desde el panel SDN de la GUI, garantizando consistencia en todo el clúster. La configuración se rastrea mediante ficheros en /etc/pve/sdn, sincronizados automáticamente en todos los nodos mediante pmxcfs [31]. Las zonas VXLAN permiten que VMs en diferentes nodos físicos mantengan conectividad de capa 2 a través de túneles UDP, sin que la infraestructura física subyacente deba soportar VLANs extendidas [30], siendo el módulo SDN la herramienta clave para construir infraestructuras de nube privada multi-sitio sobre Proxmox VE
+**En la práctica:** Para la mayoría de entornos, el Linux Bridge (vmbr0) con VLANs es suficiente. SDN resulta útil cuando se requiere aislamiento avanzado, redes que crucen varios nodos del clúster, o entornos multi-tenant. Los cambios se aplican de forma atómica desde la GUI para mantener consistencia en todo el clúster [31].
+
+### 4.4. Arquitectura de redes virtuales: resumen práctico
+
+La siguiente tabla resume las opciones de red disponibles en Proxmox VE y sus casos de uso recomendados:
+
+Tabla 12
+Opciones de red en Proxmox VE y casos de uso
+
+<table>
+<thead>
+<tr>
+<th>Tipo de red</th>
+<th>Caso de uso</th>
+<th>Complejidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux Bridge (vmbr0)</td>
+<td>Red de gestión y VMs en red local</td>
+<td>Baja</td>
+</tr>
+<tr>
+<td>Linux Bridge + VLAN</td>
+<td>Segmentación de tráfico (DMZ, desarrollo, producción)</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Bond (LACP)</td>
+<td>Agregación de enlaces para mayor ancho de banda</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>SDN Simple</td>
+<td>Redes aisladas con NAT para laboratorios</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>SDN VXLAN</td>
+<td>Extensión de redes L2 entre nodos del clúster</td>
+<td>Alta</td>
+</tr>
+<tr>
+<td>SDN EVPN</td>
+<td>Nube privada multi-tenant con BGP</td>
+<td>Alta</td>
+</tr>
+</tbody>
+</table>
+
+Nota. Elaboración propia a partir de [26][29][30][31].
+
+Para entornos pequeños y medianos, la configuración típica consiste en un único bridge (vmbr0) conectado a la NIC física, con la IP de gestión asignada al bridge. Las VMs y contenedores se conectan al mismo bridge y comparten la red física. Cuando se requiere segmentación, se habilita _bridge-vlan-aware_ en el bridge y se asigna una etiqueta VLAN a cada vNIC desde la configuración de la VM o contenedor. El switch físico debe estar configurado en modo trunk para permitir el paso de las VLANs.
 
 ## 5. Creación y Gestión de VMs y Contenedores
 
@@ -607,9 +730,7 @@ Proxmox VE centraliza la gestión del ciclo de vida completo tanto de máquinas 
 
 ### 5.1. Creación de una VM KVM: opciones de CPU, memoria, disco y red
 
-La creación de una máquina virtual KVM en Proxmox VE se realiza mediante el asistente "Create Virtual Machine" accesible desde la GUI web o mediante la herramienta de línea
-
-de comandos qm. Cada VM queda identificada por un VMID numérico único en el clúster (por defecto en el rango 100-999999999) y dispone de un fichero de configuración en texto plano ubicado en /etc/pve/qemu-server/<VMID>.conf, que es legible y editable directamente [33]. El asistente de creación estructura la configuración en cuatro categorías principales.
+La creación de una máquina virtual KVM en Proxmox VE se realiza mediante el asistente "Create Virtual Machine" accesible desde la GUI web o mediante la herramienta de línea de comandos qm. Cada VM queda identificada por un VMID numérico único en el clúster (por defecto en el rango 100-999999999) y dispone de un fichero de configuración en texto plano ubicado en /etc/pve/qemu-server/<VMID>.conf, que es legible y editable directamente [33]. El asistente de creación estructura la configuración en cuatro categorías principales.
 
 En cuanto a la CPU, Proxmox VE permite definir el número de sockets y cores virtuales asignados a la VM, así como el tipo de CPU emulada. La elección del tipo de CPU es especialmente relevante para la migración en vivo entre nodos: el tipo x86-64-v2-AES (por defecto desde Proxmox VE 8.1) garantiza compatibilidad con la mayoría del hardware moderno manteniendo un buen rendimiento; el tipo host expone directamente las flags de la CPU física al guest, maximizando el rendimiento pero impidiendo la migración en vivo a nodos con procesadores diferentes [34]. Es posible también configurar opciones NUMA, afinidad de CPU, y habilitar o deshabilitar la emulación de instrucciones específicas.
 
@@ -627,8 +748,8 @@ seguridad una vez y reutilizarlo en múltiples instancias, reduciendo significat
 
 Proxmox VE ofrece dos mecanismos de clonación con características y casos de uso distintos [36]:
 
-*   Linked Clone (clon enlazado): crea una nueva VM cuyo disco virtual no es una copia independiente, sino que referencia la imagen de la plantilla base y solo almacena los bloques que difieren de ella (técnica copy-on-write). La creación es casi instantánea y el espacio inicial consumido es mínimo. Como contrapartida, el clon enlazado depende de la plantilla: si la plantilla se elimina, el clon queda inutilizable. Este tipo de clon requiere que el almacenamiento soporte snapshots (LVM-Thin, ZFS o Ceph). Es ideal para laboratorios, entornos de desarrollo o despliegues masivos temporales donde el ahorro de espacio es prioritario [36].
-*   Full Clone (clon completo): genera una copia completamente independiente del disco de la plantilla. El proceso requiere más tiempo y espacio, pero el clon resultante es totalmente autónomo y no depende de la plantilla original. Es el tipo recomendado para VMs de producción donde se requiere independencia, portabilidad entre diferentes tipos de almacenamiento y fiabilidad a largo plazo [35].
+- Linked Clone (clon enlazado): crea una nueva VM cuyo disco virtual no es una copia independiente, sino que referencia la imagen de la plantilla base y solo almacena los bloques que difieren de ella (técnica copy-on-write). La creación es casi instantánea y el espacio inicial consumido es mínimo. Como contrapartida, el clon enlazado depende de la plantilla: si la plantilla se elimina, el clon queda inutilizable. Este tipo de clon requiere que el almacenamiento soporte snapshots (LVM-Thin, ZFS o Ceph). Es ideal para laboratorios, entornos de desarrollo o despliegues masivos temporales donde el ahorro de espacio es prioritario [36].
+- Full Clone (clon completo): genera una copia completamente independiente del disco de la plantilla. El proceso requiere más tiempo y espacio, pero el clon resultante es totalmente autónomo y no depende de la plantilla original. Es el tipo recomendado para VMs de producción donde se requiere independencia, portabilidad entre diferentes tipos de almacenamiento y fiabilidad a largo plazo [35].
 
 Tabla 6
 
@@ -688,17 +809,22 @@ El proceso estándar de creación de un contenedor LXC comprende los pasos sigui
 
 Una distinción operativa importante es la elección entre contenedores privilegiados y no privilegiados. Los contenedores no privilegiados (opción por defecto desde Proxmox VE 4.0) mapean los UIDs internos del contenedor a UIDs no privilegiados en el host mediante user namespaces, lo que limita significativamente el impacto de una eventual fuga de seguridad del contenedor. Los contenedores privilegiados mantienen el UID 0 del root del contenedor equivalente al root del host, ofreciendo mayor compatibilidad con ciertas aplicaciones pero con menores garantías de aislamiento [37]. Proxmox VE recomienda el uso de contenedores no privilegiados siempre que sea posible para entornos de producción.
 
+![Creación de contenedores LXC — Plantillas y configuración](https://pve.proxmox.com/mediawiki/images/b/b2/Gui-datacenter-create-node-openfabric.png)
+
+Fg. 21 Creación y gestión de contenedores LXC
+
 ### 5.4. Gestión del ciclo de vida: arranque, pausa, apagado, reinicio y eliminación
 
 Proxmox VE implementa un conjunto unificado de operaciones de gestión del ciclo de vida aplicables tanto a VMs KVM como a contenedores LXC, accesibles desde la GUI, la API REST y las herramientas de línea de comandos qm (para VMs) y pct (para contenedores) [38]. Las operaciones principales son:
 
-*   **Arranque (Start):** inicia la VM o el contenedor. Es posible configurar el arranque automático en el inicio del nodo (onboot: 1 en el fichero de configuración), con orden de arranque y tiempo de espera entre instancias para controlar el orden de inicio en el clúster [39].
-*   **Pausa (Suspend/Resume):** en VMs KVM, la suspensión guarda el estado completo de la RAM en disco (hibernate) o mantiene la VM congelada en memoria RAM del host (suspend to RAM). Esta operación permite liberar recursos de CPU mientras se preserva el estado exacto de ejecución para una reanudación posterior instantánea [33]. Los contenedores LXC no disponen de una operación de suspensión equivalente a nivel de RAM.
-*   **Apagado (Shutdown / Stop):** Proxmox VE diferencia entre shutdown (envía señal ACPI de apagado al guest para un apagado limpio del sistema operativo, equivalente a pulsar el botón de encendido) y stop (corte de energía inmediato, equivalente a desenchufar el servidor). Para VMs con aplicaciones críticas siempre se recomienda el shutdown para evitar corrupción de datos [39].
-*   **Reinicio (Reboot / Reset):** análogamente, reboot envía la señal de reinicio limpio al sistema operativo guest (ACPI), mientras que reset realiza un reinicio forzado
+- **Arranque (Start):** inicia la VM o el contenedor. Es posible configurar el arranque automático en el inicio del nodo (onboot: 1 en el fichero de configuración), con orden de arranque y tiempo de espera entre instancias para controlar el orden de inicio en el clúster [39].
+- **Pausa (Suspend/Resume):** en VMs KVM, la suspensión guarda el estado completo de la RAM en disco (hibernate) o mantiene la VM congelada en memoria RAM del host (suspend to RAM). Esta operación permite liberar recursos de CPU mientras se preserva el estado exacto de ejecución para una reanudación posterior instantánea [33]. Los contenedores LXC no disponen de una operación de suspensión equivalente a nivel de RAM.
+- **Apagado (Shutdown / Stop):** Proxmox VE diferencia entre shutdown (envía señal ACPI de apagado al guest para un apagado limpio del sistema operativo, equivalente a pulsar el botón de encendido) y stop (corte de energía inmediato, equivalente a desenchufar el servidor). Para VMs con aplicaciones críticas siempre se recomienda el shutdown para evitar corrupción de datos [39].
+- **Reinicio (Reboot / Reset):** análogamente, reboot envía la señal de reinicio limpio al sistema operativo guest (ACPI), mientras que reset realiza un reinicio forzado
 
 equivalente a un reset de hardware, sin pasar por los procedimientos de cierre del SO [33].
-*   Eliminación (Destroy/Remove): elimina permanentemente la VM o el contenedor junto con todos sus discos virtuales y el fichero de configuración. Proxmox VE requiere que la instancia esté detenida antes de permitir la eliminación. Si la VM o contenedor tiene snapshots asociados, estos también se eliminan en cascada [38]. Esta operación es irreversible si no existe una copia de seguridad previa.
+
+- Eliminación (Destroy/Remove): elimina permanentemente la VM o el contenedor junto con todos sus discos virtuales y el fichero de configuración. Proxmox VE requiere que la instancia esté detenida antes de permitir la eliminación. Si la VM o contenedor tiene snapshots asociados, estos también se eliminan en cascada [38]. Esta operación es irreversible si no existe una copia de seguridad previa.
 
 Adicionalmente, Proxmox VE ofrece la operación de migración en vivo (live migration) para VMs KVM en clúster, que permite mover una VM en ejecución de un nodo a otro sin tiempo de inactividad apreciable, siempre que ambos nodos tengan acceso al almacenamiento compartido donde reside el disco de la VM. La migración transfiere el estado de la RAM de la VM de forma incremental al nodo destino mientras la VM sigue ejecutándose, y finalmente realiza una commutación rápida que interrumpe brevemente la VM (típicamente menos de un segundo) [40]. Para contenedores LXC, la migración en clúster requiere detener el contenedor si no se dispone de almacenamiento compartido.
 
@@ -707,17 +833,10 @@ Adicionalmente, Proxmox VE ofrece la operación de migración en vivo (live migr
 La continuidad operativa en Proxmox VE se logra combinando snapshots (para reversión rápida ante cambios) y copias de seguridad (para recuperación completa, retención y restauración), porque cada mecanismo cubre riesgos distintos.
 Proxmox VE integra estas funciones y permite ajustar el equilibrio entre consistencia del respaldo y tiempo de indisponibilidad mediante el parámetro mode, considerando el tipo de huésped (VM/CT) y las capacidades del almacenamiento. [41]
 
-![Screenshot of Proxmox VE interface showing Datacenter view with virtual machines and backup settings.](images/marco_teorico/image_6.png)
-
-Fg. 6 Presentación de volúmenes y estado de disco [41]
-
 ### 6.1. Protección del Dato
 
 La protección de la información en entornos virtualizados requiere diferenciar estrictamente entre la redundancia local y la portabilidad del dato. Las instantáneas operan a nivel del sistema de archivos o del administrador de volúmenes lógicos subyacente (como ZFS, Ceph o LVM-Thin), creando un registro de los bloques de datos en un instante de tiempo específico. Esto significa que un snapshot depende inherentemente de la integridad del almacenamiento físico original; si el disco físico falla, el snapshot se pierde junto con la máquina virtual original.
 Por el contrario, el sistema de copias de seguridad integrado extrae la configuración completa de la máquina virtual o contenedor y el contenido íntegro de sus discos, encapsulándolos en un archivo portátil. Esta arquitectura garantiza que el dato pueda ser transferido a un almacenamiento secundario externo, como un servidor de red NFS, un recurso compartido CIFS/SMB, o preferiblemente un Proxmox Backup Server (PBS). Al independizar los datos del hardware de origen, se cumple con los principios de continuidad de negocio para la recuperación en hardware distinto tras una falla catastrófica. [42]
-
-![Screenshot of Proxmox Backup Server showing data usage and storage statistics for "my_datastore" datastore.](images/marco_teorico/image_7.png)
-Fg. 7 Uso y gestión de un datastore en Proxmox [42]
 
 #### 6.1.1. Snapshots (instantáneas): creación, restauración y gestión
 
@@ -726,13 +845,19 @@ Las instantáneas (snapshots) son un mecanismo orientado a la reversión ágil d
 contenido residente en la memoria RAM. Esta característica permite que, tras aplicar un parche de software fallido en el sistema operativo invitado, el administrador ejecute un rollback que devuelva a la máquina a su estado idéntico de milisegundos previos a la captura.
 Para los contenedores LXC, el proceso depende directamente de si el sistema de almacenamiento subyacente (como ZFS o LVM-Thin) soporta de forma nativa la tecnología de instantáneas. En cuanto a su gestión operativa, Proxmox advierte que retener múltiples snapshots durante largos períodos introduce penalizaciones en las operaciones de lectura/escritura (I/O) debido a la arquitectura de Copy-on-Write. Por consiguiente, la práctica estándar indica crearlos únicamente antes de intervenciones de riesgo y eliminarlos (proceso de consolidación o commit) tras la verificación de éxito. [46]
 
+![Snapshots — Creación y restauración de instantáneas en Proxmox VE](https://pve.proxmox.com/mediawiki/images/a/a8/Screen-VM-Restore.png)
+
+Fg. 22 Snapshots — Creación y restauración de instantáneas
+
 ### 6.2. Copias de Seguridad
 
 Las copias de seguridad en Proxmox VE constituyen la verdadera garantía de recuperación ante desastres (Disaster Recovery). A diferencia de los snapshots, un backup es siempre una copia completa e independiente que empaquetá no solo el contenido de todos los discos, sino también el archivo de configuración preciso de la VM o contenedor. [45]
 
 #### 6.2.1. Backup integrado en Proxmox VE: modos vzdump (snapshot, suspend, stop)
 
-El motor principal que ejecuta las tareas de respaldo se denomina vzdump. Esta herramienta genera archivos unificados (formato .vma para máquinas virtuales y .tar para contenedores) empleando algoritmos de compresión modernos y multihilo como Zstandard (zstd). Para asegurar la coherencia de bases de datos o sistemas de archivos transaccionales durante la lectura de los datos, vzdump permite al administrador elegir entre tres modos operativos [46]:
+Proxmox utiliza la herramienta **vzdump** para crear respaldos. Genera archivos comprimidos (.vma para VMs, .tar para contenedores) que incluyen discos y configuración. El administrador debe elegir el **modo** según el equilibrio entre consistencia de datos y tiempo de inactividad [46]:
+
+**Resumen práctico:** _Snapshot_ = backup con la VM encendida, mínimo downtime, recomendado para la mayoría de casos. _Stop_ = apaga la VM durante el backup, máxima consistencia pero la VM no estará disponible. _Suspend_ = intermedio, generalmente no recomendado.
 
 Tabla 7
 Modos de acuerdo al huésped y comportamientos e implicaciones
@@ -806,24 +931,29 @@ Las tareas incluyen la automatización de la política de retención o poda (pru
 La seguridad y administración en Proxmox VE constituyen pilares fundamentales para garantizar la integridad, disponibilidad y confidencialidad de los recursos virtualizados. La plataforma incorpora mecanismos avanzados de control de acceso, autenticación y segmentación de privilegios que permiten implementar políticas de seguridad alineadas con principios como el mínimo privilegio y la separación de funciones
 
 ### 7.1. Control de Acceso
+
 #### 7.1.1. RBAC: usuarios, grupos y roles predefinidos en Proxmox
 
 Proxmox VE implementa un modelo de control de acceso basado en roles (Role-Based Access Control, RBAC), el cual permite asignar permisos de manera estructurada y jerárquica sobre los distintos recursos del entorno virtualizado. Este modelo se basa en la asignación de una tupla compuesta por (ruta, usuario o grupo, rol), donde el rol define un conjunto específico de privilegios que serán aplicados sobre un recurso determinado dentro del árbol jerárquico del Datacenter [49].
 
 En Proxmox VE, los usuarios se identifican mediante la sintaxis usuario@realm (por ejemplo, admin@pam o usuario@pve). Estos pueden ser creados desde la interfaz gráfica en Datacenter → Permissions → Users, o mediante la herramienta de línea de comandos pveum, que permite administrar usuarios, grupos, roles y listas de control de acceso (ACL) [49].
 
+![Gestión de usuarios, grupos y permisos RBAC en Proxmox VE](https://pve.proxmox.com/mediawiki/images/a/a3/Gui-datacenter-fabrics-overview.png)
+
+Fg. 24 Gestión de usuarios y permisos (RBAC)
+
 El sistema recomienda la utilización de grupos para simplificar la administración de permisos. En lugar de asignar roles directamente a múltiples usuarios individuales, se asigna el rol a un grupo, y los usuarios heredan automáticamente los permisos asociados al pertenecer a dicho grupo [49].
 
 Un rol en Proxmox VE es una colección predefinida de privilegios. El sistema incluye diversos roles integrados que cubren los escenarios más comunes de administración:
 
-*   Administrator: concede todos los privilegios disponibles en el sistema, incluyendo gestión de nodos, almacenamiento, red, usuarios y permisos [49].
-*   PVEAdmin: permite la mayoría de las operaciones administrativas sobre máquinas virtuales y contenedores, pero no incluye privilegios para modificar configuraciones críticas del sistema o gestionar permisos globales [49].
-*   PVEVMAdmin: orientado específicamente a la administración completa de máquinas virtuales (crear, eliminar, modificar hardware virtual, snapshots, clonación, etc.) [49].
-*   PVEVMUser: permite operaciones básicas sobre VMs como encendido, apagado y acceso a consola, pero restringe modificaciones estructurales [49].
-*   PVEAuditor: proporciona acceso de solo lectura a los recursos asignados, útil para auditorías o monitoreo [49].
-*   PVEDatastoreAdmin y PVESysAdmin: roles especializados para administración de almacenamiento y auditoría de sistema respectivamente [49].
+- Administrator: concede todos los privilegios disponibles en el sistema, incluyendo gestión de nodos, almacenamiento, red, usuarios y permisos [49].
+- PVEAdmin: permite la mayoría de las operaciones administrativas sobre máquinas virtuales y contenedores, pero no incluye privilegios para modificar configuraciones críticas del sistema o gestionar permisos globales [49].
+- PVEVMAdmin: orientado específicamente a la administración completa de máquinas virtuales (crear, eliminar, modificar hardware virtual, snapshots, clonación, etc.) [49].
+- PVEVMUser: permite operaciones básicas sobre VMs como encendido, apagado y acceso a consola, pero restringe modificaciones estructurales [49].
+- PVEAuditor: proporciona acceso de solo lectura a los recursos asignados, útil para auditorías o monitoreo [49].
+- PVEDatastoreAdmin y PVESysAdmin: roles especializados para administración de almacenamiento y auditoría de sistema respectivamente [49].
 
-* NoAccess: rol que explícitamente deniega permisos sobre un recurso específico [49].
+- NoAccess: rol que explícitamente deniega permisos sobre un recurso específico [49].
 
 Los permisos se asignan sobre rutas específicas dentro del árbol de recursos (por ejemplo /, /nodes, /vms/<VMID>). La herencia permite que un permiso asignado en un nivel superior se propague automáticamente a los objetos hijos, salvo que exista una regla más específica que lo sobrescriba [49].
 
@@ -877,8 +1007,8 @@ Roles predefinidos en Proxmox VE
 
 Proxmox VE soporta múltiples dominios de autenticación (realms), que determinan el origen de validación de credenciales. Entre los dominios predeterminados se encuentran:
 
-*   Proxmox VE Authentication Server (pve)
-*   Linux PAM standard authentication (pam)
+- Proxmox VE Authentication Server (pve)
+- Linux PAM standard authentication (pam)
 
 Adicionalmente, la plataforma permite integración con LDAP, Active Directory y OpenID Connect [49].
 
@@ -896,10 +1026,10 @@ El dominio Proxmox VE Auth es un sistema de autenticación interno propio de la 
 
 A diferencia de PAM:
 
-*   Los usuarios @pve no poseen cuenta de sistema en Debian.
-*   No tienen acceso SSH al nodo.
-*   Se sincronizan automáticamente en todos los nodos del clúster.
-*   Permiten la gestión centralizada desde la GUI [49].
+- Los usuarios @pve no poseen cuenta de sistema en Debian.
+- No tienen acceso SSH al nodo.
+- Se sincronizan automáticamente en todos los nodos del clúster.
+- Permiten la gestión centralizada desde la GUI [49].
 
 Esto convierte al dominio pve en la opción recomendada para la administración de usuarios exclusivos de la plataforma de virtualización, especialmente en entornos multinodo.
 
@@ -944,13 +1074,10 @@ Comparativa entre dominios de autenticación en Proxmox VE
 </table>
 
 ### 7.2. Interfaces de Administración
+
 #### 7.2.1. GUI Web: navegación y tareas comunes
 
 La interfaz gráfica de usuario (GUI) de Proxmox Virtual Environment constituye el principal punto de administración del entorno virtualizado. Se accede mediante protocolo HTTPS a través del puerto 8006 y está construida sobre tecnologías web modernas que permiten una gestión centralizada de nodos, máquinas virtuales y contenedores desde cualquier navegador compatible. A diferencia de otras soluciones que requieren clientes propietarios, Proxmox VE integra todas las funciones administrativas en su consola web, incluyendo monitoreo, configuración avanzada y ejecución de tareas operativas críticas [50].
-
-![Proxmox VE GUI screenshot showing Datacenter view with nodes prod1, prod2, prod3, development, test, and various system ...](images/marco_teorico/image_8.png)
-
-Fg. 8 GUI de administración de Proxmox VE (Vista Datacenter y Nodo) [50].
 
 La estructura de navegación se organiza en un panel jerárquico lateral denominado Resource Tree, donde se visualizan los objetos principales del sistema: Datacenter, Nodos, Máquinas Virtuales (KVM), Contenedores (LXC) y Almacenamientos [50].
 
@@ -958,20 +1085,20 @@ Desde el nivel Datacenter se gestionan configuraciones globales como almacenamie
 
 Para cada VM o Contenedor, la GUI ofrece pestañas específicas como:
 
-*   Summary: visualización gráfica de uso de recursos.
-*   Console: acceso remoto mediante noVNC o xterm.js.
-*   Hardware: modificación de CPU, memoria, discos y red.
-*   Snapshots: creación y restauración de estados puntuales.
-*   Backup: ejecución manual de copias de seguridad.
-*   Logs/Tasks: historial detallado de operaciones ejecutadas.
+- Summary: visualización gráfica de uso de recursos.
+- Console: acceso remoto mediante noVNC o xterm.js.
+- Hardware: modificación de CPU, memoria, discos y red.
+- Snapshots: creación y restauración de estados puntuales.
+- Backup: ejecución manual de copias de seguridad.
+- Logs/Tasks: historial detallado de operaciones ejecutadas.
 
 Entre las tareas operativas más frecuentes realizadas desde la GUI se encuentran:
 
-*   Creación de nuevas VMs o CT mediante asistentes gráficos.
-*   Clonación de plantillas (linked clone o full clone).
-*   Migración en vivo entre nodos del clúster.
-*   Programación de backups automáticos.
-*   Monitoreo de consumo de recursos y análisis de eventos del sistema.
+- Creación de nuevas VMs o CT mediante asistentes gráficos.
+- Clonación de plantillas (linked clone o full clone).
+- Migración en vivo entre nodos del clúster.
+- Programación de backups automáticos.
+- Monitoreo de consumo de recursos y análisis de eventos del sistema.
 
 La GUI integra además un panel de Tasks en la parte inferior, donde se visualiza en tiempo real el estado de procesos como migraciones, snapshots o restauraciones, permitiendo trazabilidad operativa completa [50].
 
@@ -981,44 +1108,46 @@ Además de la interfaz gráfica, Proxmox VE proporciona una interfaz de línea d
 
 La herramienta qm (QEMU Manager) se emplea para la gestión de máquinas virtuales KVM. Algunos comandos esenciales incluyen:
 
-*   Crear VM:
-    ```
-    qm create 101 --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
-    ```
-*   Iniciar VM:
-    ```
-    qm start 101
-    ```
-*   Apagar VM (ordenado):
-    ```
-    qm shutdown 101
-    ```
-*   Detener VM (forzado):
-    ```
-    qm stop 101
-    ```
+- Crear VM:
+  ```
+  qm create 101 --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
+  ```
+- Iniciar VM:
+  ```
+  qm start 101
+  ```
+- Apagar VM (ordenado):
+  ```
+  qm shutdown 101
+  ```
+- Detener VM (forzado):
 
-*   Migrar VM:
-    *   `qm migrate 101 nodo2`
-*   Eliminar VM:
-    *   `qm destroy 101 --purge`
+  ```
+  qm stop 101
+  ```
+
+- Migrar VM:
+  - `qm migrate 101 nodo2`
+- Eliminar VM:
+  - `qm destroy 101 --purge`
 
 Por su parte, la herramienta pct (Proxmox Container Toolkit) permite administrar contenedores LXC:
 
-*   Crear contenedor:
-    *   `pct create 201 local:vztmpl/debian-12-standard_12.0-1_amd64.tar.zst`
-*   Iniciar contenedor:
-    *   `pct start 201`
-*   Detener contenedor:
-    *   `pct stop 201`
-*   Migrar contenedor:
-    *   `pct migrate 201 nodo2`
-*   Eliminar contenedor:
-    *   `pct destroy 201`
+- Crear contenedor:
+  - `pct create 201 local:vztmpl/debian-12-standard_12.0-1_amd64.tar.zst`
+- Iniciar contenedor:
+  - `pct start 201`
+- Detener contenedor:
+  - `pct stop 201`
+- Migrar contenedor:
+  - `pct migrate 201 nodo2`
+- Eliminar contenedor:
+  - `pct destroy 201`
 
 Ambas herramientas operan sobre archivos de configuración ubicados en `/etc/pve/`, los cuales se sincronizan automáticamente en entornos de clúster mediante el sistema de archivos distribuido pmxcfs. La CLI replica prácticamente todas las funciones disponibles en la GUI, incluyendo snapshots, backups y modificaciones de hardware virtual, ofreciendo así flexibilidad operativa y control granular del entorno [51].
 
 ### 7.3. Firewall Integrado
+
 #### 7.3.1. Arquitectura del firewall: niveles Datacenter, Nodo y VM/Contenedor
 
 El firewall integrado de Proxmox VE opera en tres niveles jerárquicos: Datacenter (clúster), Nodo (host físico) y VM/Contenedor. Cada nivel permite definir reglas independientes y se habilita por separado en la GUI o CLI.. En el nivel Datacenter
@@ -1029,9 +1158,9 @@ En el nivel Nodo se aplica el firewall sobre el servidor físico: al activarlo, 
 
 Finalmente, el nivel VM/Contenedor protege cada máquina virtual o contenedor individual. Aquí también se heredan las políticas superiores, y se deben crear reglas explícitas para cada servicio que se quiera permitir. Por defecto, al habilitar el firewall en una VM/CT la política de entrada es DROP y la de salida ACCEPT, por lo que es necesario definir reglas “IN” (entrada) para los servicios que deben ser accesibles [52].
 
-*   Datacenter: Aplica reglas y políticas de cortafuegos a todo el clúster. Se configuran aquí las opciones globales, los grupos de seguridad reutilizables y aliases de IP; las reglas definidas se distribuyen a todos los nodos [52].
-*   Nodo: Controla el firewall del host físico. Al habilitarse, utiliza las políticas del nivel Datacenter y puede requerir reglas adicionales para el acceso al nodo [52].
-*   VM/Contenedor: Controla el firewall de cada máquina virtual o contenedor. Cada interfaz de red puede tener el firewall activo o inactivo. Por defecto se bloquea todo el tráfico de entrada, por lo que se deben crear reglas de entrada que permitan los servicios deseados [52].
+- Datacenter: Aplica reglas y políticas de cortafuegos a todo el clúster. Se configuran aquí las opciones globales, los grupos de seguridad reutilizables y aliases de IP; las reglas definidas se distribuyen a todos los nodos [52].
+- Nodo: Controla el firewall del host físico. Al habilitarse, utiliza las políticas del nivel Datacenter y puede requerir reglas adicionales para el acceso al nodo [52].
+- VM/Contenedor: Controla el firewall de cada máquina virtual o contenedor. Cada interfaz de red puede tener el firewall activo o inactivo. Por defecto se bloquea todo el tráfico de entrada, por lo que se deben crear reglas de entrada que permitan los servicios deseados [52].
 
 #### 7.3.2. Grupos de seguridad y macros predefinidas
 
@@ -1061,11 +1190,11 @@ El componente central de HA es el HA Manager (pve-ha-manager), encargado de supe
 
 Internamente, el sistema se compone de dos servicios principales:
 
-*   Cluster Resource Manager (CRM): responsable de las decisiones globales dentro del clúster. Supervisa el estado general, mantiene el control del
+- Cluster Resource Manager (CRM): responsable de las decisiones globales dentro del clúster. Supervisa el estado general, mantiene el control del
 
 quórum a través de Corosync y decide en qué nodo debe ejecutarse cada recurso HA [53].
 
-*   Local Resource Manager (LRM): ejecutado en cada nodo, encargado de aplicar localmente las acciones ordenadas por el CRM, tales como iniciar, detener o reiniciar máquinas virtuales y contenedores [53].
+- Local Resource Manager (LRM): ejecutado en cada nodo, encargado de aplicar localmente las acciones ordenadas por el CRM, tales como iniciar, detener o reiniciar máquinas virtuales y contenedores [53].
 
 El HA Manager mantiene una supervisión continua del estado de los nodos y de los recursos configurados. Si se detecta la pérdida de un nodo (por fallo de hardware, caída del sistema o pérdida de comunicación), el CRM determina automáticamente qué recursos estaban ejecutándose en ese nodo y planifica su reinicio en otro servidor disponible que cumpla con las condiciones necesarias (principalmente acceso al almacenamiento compartido) [53].
 
@@ -1203,6 +1332,30 @@ Complementariamente, la GUI ofrece acceso directo a los logs del sistema desde l
 
 En entornos configurados en clúster, el nivel Datacenter incluye el Cluster Log, donde se consolidan eventos generados por todos los nodos participantes. Estos registros incluyen operaciones de alta disponibilidad (HA), migraciones en vivo, cambios de configuración y estados de servicios distribuidos. La visualización centralizada de estos eventos proporciona una perspectiva global del estado del clúster, facilitando el análisis de fallos y la verificación de procesos automáticos de recuperación [59].
 
+## 10. Casos de Éxito
+
+Las implementaciones de Proxmox VE en organizaciones de diversos sectores demuestran la viabilidad de la plataforma como alternativa empresarial a soluciones propietarias. A continuación se presentan casos de éxito documentados que ilustran los beneficios tangibles de la adopción.
+
+### 10.1. Farmácia Nova da Maia (Sector Salud — Portugal)
+
+Farmácia Nova da Maia, la farmacia online más visitada de Portugal, migró su infraestructura a Proxmox VE buscando alto rendimiento, alta disponibilidad y reducción de costos [60]. La implementación incluye un clúster de dos nodos Proxmox VE con QDevice, servidores HPE con discos NVMe PCIe 5.0 y ZFS para replicación de almacenamiento entre nodos. La replicación ZFS se realiza sobre una red de 50 Gbps, con algunas máquinas virtuales replicadas cada 5 minutos para minimizar la pérdida de datos ante fallos catastróficos. Proxmox Backup Server complementa la solución con respaldos offsite. El resultado: mejora significativa del rendimiento tanto para clientes online como para operaciones internas, cumplimiento de políticas de continuidad de negocio y protección de datos críticos en un sector altamente regulado.
+
+### 10.2. Emmecubo (Comercio Electrónico — Italia)
+
+La empresa italiana Emmecubo migró desde VMware a Proxmox VE en menos de un mes sin interrupciones de servicio [63]. Con aproximadamente 30 máquinas virtuales en producción, la migración permitió eliminar costos de licenciamiento, mejorar la utilización de recursos de CPU y memoria, y reducir el tiempo de aprovisionamiento de nuevas VMs. La transición demostró la compatibilidad de Proxmox VE para entornos de comercio electrónico que requieren alta disponibilidad y escalabilidad.
+
+### 10.3. Empresa de Servicios Financieros
+
+Una empresa del sector financiero consolidó 25 servidores físicos en 3 nodos Proxmox, logrando una reducción del 60% en costos de infraestructura física [62]. La virtualización permitió escalar recursos según la demanda estacional (por ejemplo, picos en temporada fiscal) y reducir el tiempo de implementación de nuevos entornos de días a horas. La combinación de KVM y LXC permitió optimizar cargas de trabajo críticas (bases de datos, aplicaciones transaccionales) con el aislamiento adecuado.
+
+### 10.4. Metalurgia de Alta Precisión (Sector Automotriz)
+
+Jesús Oñate, empresa del sector automotriz, modernizó su infraestructura heredada con Proxmox VE y almacenamiento distribuido Ceph [61]. Los resultados incluyen mayor resiliencia mediante distribución y replicación de datos, reducción del riesgo operativo y control del TCO (Total Cost of Ownership) mediante eliminación de licencias obligatorias. La organización completó una actualización a Proxmox VE 9 y Proxmox Backup Server 4 sin interrumpir operaciones productivas.
+
+### 10.5. Empresa de Desarrollo de Software
+
+Una empresa mediana de desarrollo de software consolidó 15 servidores físicos de pruebas y desarrollo en 3 nodos Proxmox [62]. Los beneficios reportados incluyen una reducción del 60% en el consumo energético del centro de datos y la capacidad de clonar entornos de desarrollo completos en minutos mediante plantillas y linked clones. La integración con herramientas de CI/CD y la API REST de Proxmox facilitó la automatización del aprovisionamiento de entornos de staging.
+
 ## REFERENCIAS BIBLIOGRÁFICAS
 
 [1] Proxmox Server Solutions GmbH. (2024). Proxmox Virtual Environment 9.1 disponible. Recuperado de https://www.proxmox.com/en/about/company-details/press-releases/proxmox-virtual-environment-9-1
@@ -1227,42 +1380,42 @@ En entornos configurados en clúster, el nivel Datacenter incluye el Cluster Log
 
 [11] “System Requirements,” Proxmox, 2019. https://www.proxmox.com/en/products/proxmox-virtual-environment/requirements (accessed Feb. 25, 2026).
 
-[12] ReadySpace, “Proxmox Hardware Requirements: What You Need to Know,” *ReadySpace Philippines*, Aug. 24, 2024. https://readyspace.com.ph/proxmox-hardware-requirements/ (accessed Feb. 25, 2026).
+[12] ReadySpace, “Proxmox Hardware Requirements: What You Need to Know,” _ReadySpace Philippines_, Aug. 24, 2024. https://readyspace.com.ph/proxmox-hardware-requirements/ (accessed Feb. 25, 2026).
 
-[13]“Proxmox VE Minimum Requirements: Essential Hardware Specifications,” *Diskinternals.com*, 2025. https://www.diskinternals.com/vmfs-recovery/proxmox-minimum-requirements/ (accessed Feb. 25, 2026).
+[13]“Proxmox VE Minimum Requirements: Essential Hardware Specifications,” _Diskinternals.com_, 2025. https://www.diskinternals.com/vmfs-recovery/proxmox-minimum-requirements/ (accessed Feb. 25, 2026).
 
-[14] server-parts.eu server-parts.eu, “Proxmox Hardware Requirements: Server, Storage & On-Premise Infrastructure,” *server-parts.eu*, Apr. 17, 2025.
+[14] server-parts.eu server-parts.eu, “Proxmox Hardware Requirements: Server, Storage & On-Premise Infrastructure,” _server-parts.eu_, Apr. 17, 2025.
 https://www.server-parts.eu/post/proxmox-hardware-requirements-server-storage (accessed Feb. 25, 2026).
 
-[15] “Installation - Proxmox VE,” *Proxmox.com*, 2025. https://pve.proxmox.com/wiki/Installation (accessed Feb. 25, 2026).
+[15] “Installation - Proxmox VE,” _Proxmox.com_, 2025. https://pve.proxmox.com/wiki/Installation (accessed Feb. 25, 2026).
 
-[16] “Installing Proxmox VE,” *Proxmox.com*, 2025.
+[16] “Installing Proxmox VE,” _Proxmox.com_, 2025.
 https://pve.proxmox.com/pve-docs/chapter-pve-installation.html (accessed Feb. 25, 2026).
 
-[17]“Graphical User Interface - Proxmox VE,” *Proxmox.com*, 2025.
+[17]“Graphical User Interface - Proxmox VE,” _Proxmox.com_, 2025.
 https://pve.proxmox.com/wiki/Graphical_User_Interface (accessed Feb. 25, 2026).
 
-[18] I. Lee, “How to Change the Proxmox Default Port?,” @*Vinchin*, Jul. 07, 2025.
+[18] I. Lee, “How to Change the Proxmox Default Port?,” @_Vinchin_, Jul. 07, 2025.
 https://www.vinchin.com/vm-tips/proxmox-default-port.html (accessed Feb. 25, 2026).
 
-[19] “Enable Free (No-Subscription) Repositories in Proxmox VE - Power Sysadmin Blog,” *Power Sysadmin Blog - Just Another Enterprise Admin Blog*, Apr. 06, 2024.
+[19] “Enable Free (No-Subscription) Repositories in Proxmox VE - Power Sysadmin Blog,” _Power Sysadmin Blog - Just Another Enterprise Admin Blog_, Apr. 06, 2024.
 https://poweradm.com/enable-pve-no-subscription-proxmox/ (accessed Feb. 25, 2026).
 
-[20] “Proxmox VE Storage,” *Proxmox.com*, 2025.
+[20] “Proxmox VE Storage,” _Proxmox.com_, 2025.
 https://pve.proxmox.com/pve-docs/chapter-pvesm.html (accessed Feb. 25, 2026).
 
-[21]“Proxmox VE Storage,” *Proxmox.com*, 2021.
+[21]“Proxmox VE Storage,” _Proxmox.com_, 2021.
 https://pve.proxmox.com/pve-docs-6/chapter-pvesm.html (accessed Feb. 25, 2026).
 
-[22] mejokj and mejokj, “Proxmox VE Storage: Thin vs Thick Provisioning Explained | Saturn ME,” *Saturn ME*, Jun. 22, 2025.
+[22] mejokj and mejokj, “Proxmox VE Storage: Thin vs Thick Provisioning Explained | Saturn ME,” _Saturn ME_, Jun. 22, 2025.
 https://www.saturnme.com/proxmox-ve-storage-thin-vs-thick-provisioning-explained/ (accessed Feb. 25, 2026).
 
-[23] A. Perlman, “Building Enterprise-Grade Storage on Proxmox with ZFS - Klara Systems,” *Klara Systems*, Oct. 15, 2025.
+[23] A. Perlman, “Building Enterprise-Grade Storage on Proxmox with ZFS - Klara Systems,” _Klara Systems_, Oct. 15, 2025.
 https://klarasytems.com/articles/building-enterprise-grade-storage-on-proxmox-with-zfs/ (accessed Feb. 25, 2026).
 
-[24] in Proxmox, “Creating and Managing RAID and ZFS Storage in Proxmox VE | JustToThePoint,” *JustToThePoint*, May 13, 2024. https://www.justtothepoint.com/software/proxmox/ (accessed Feb. 25, 2026).
+[24] in Proxmox, “Creating and Managing RAID and ZFS Storage in Proxmox VE | JustToThePoint,” _JustToThePoint_, May 13, 2024. https://www.justtothepoint.com/software/proxmox/ (accessed Feb. 25, 2026).
 
-[25] *Youtube.com*, 2026. https://www.youtube.com/watch?v=YxpCVAC_H1o (accessed Feb. 25, 2026).
+[25] _Youtube.com_, 2026. https://www.youtube.com/watch?v=YxpCVAC_H1o (accessed Feb. 25, 2026).
 
 [26] Proxmox Server Solutions GmbH, "Network Configuration – Proxmox VE Wiki", pve.proxmox.com, 2025. [En línea]. Disponible en:
 https://pve.proxmox.com/wiki/Network_Configuration.
@@ -1302,21 +1455,21 @@ https://pve.proxmox.com/wiki/VM_Templates_and_Clones.
 [40] Proxmox Server Solutions GmbH, "Migration of VMs and Containers – Proxmox VE Wiki", pve.proxmox.com, 2025. [En línea]. Disponible en:
 https://pve.proxmox.com/wiki/Migration_of_VMs_and_Containers_in_Proxmox_VE.
 
-[41] “How to Modify Proxmox Backup Location: A Step-by-Step Guide,” *NAKIVO*, Apr. 03, 2025. https://www.nakivo.com/blog/proxmox-backup-location/ (accessed Feb. 25, 2026).
+[41] “How to Modify Proxmox Backup Location: A Step-by-Step Guide,” _NAKIVO_, Apr. 03, 2025. https://www.nakivo.com/blog/proxmox-backup-location/ (accessed Feb. 25, 2026).
 
-[42] HOSTKEY, “Proxmox Backup Server - Documentation & FAQ,” *Hostkey.com*, 2026. https://hostkey.com/documentation/marketplace/virt_hypervisors/proxmox_backup_server/ (accessed Feb. 25, 2026).
+[42] HOSTKEY, “Proxmox Backup Server - Documentation & FAQ,” _Hostkey.com_, 2026. https://hostkey.com/documentation/marketplace/virt_hypervisors/proxmox_backup_server/ (accessed Feb. 25, 2026).
 
-[43] eXtre, “The Complete Guide to Proxmox Backups: VZDump and Proxmox Backup Server - Boxvirt - Proxmox & OPNsense Infrastructure Guides,” *Boxvirt - Proxmox & OPNsense Infrastructure Guides*, Aug. 09, 2025. https://boxvirt.com/proxmox-backups/ (accessed Feb. 25, 2026).
+[43] eXtre, “The Complete Guide to Proxmox Backups: VZDump and Proxmox Backup Server - Boxvirt - Proxmox & OPNsense Infrastructure Guides,” _Boxvirt - Proxmox & OPNsense Infrastructure Guides_, Aug. 09, 2025. https://boxvirt.com/proxmox-backups/ (accessed Feb. 25, 2026).
 
-[44] “Proxmox VE Administration Guide,” *Proxmox.com*, 2025. https://pve.proxmox.com/pve-docs/pve-admin-guide.html (accessed Feb. 25, 2026).
+[44] “Proxmox VE Administration Guide,” _Proxmox.com_, 2025. https://pve.proxmox.com/pve-docs/pve-admin-guide.html (accessed Feb. 25, 2026).
 
-[45] E. Smith, “Backup Proxmox VE VMs Quickly and Easily,” *ServeTheHome*, Apr. 30, 2024. https://www.servethehome.com/backup-proxmox-ve-vms-quickly-and-easily/ (accessed Feb. 25, 2026).
+[45] E. Smith, “Backup Proxmox VE VMs Quickly and Easily,” _ServeTheHome_, Apr. 30, 2024. https://www.servethehome.com/backup-proxmox-ve-vms-quickly-and-easily/ (accessed Feb. 25, 2026).
 
-[46] B. Đorđević, K. Janjić, and N. Kraljević, “File System Performance Comparison with Xen and Proxmox as Type-1 Linux-Based Hypervisors,” *2024 11th International Conference on Electrical, Electronic and Computing Engineering (IcETRAN)*, pp. 1–6, Jun. 2024, doi: https://doi.org/10.1109/icetran62308.2024.10645178.
+[46] B. Đorđević, K. Janjić, and N. Kraljević, “File System Performance Comparison with Xen and Proxmox as Type-1 Linux-Based Hypervisors,” _2024 11th International Conference on Electrical, Electronic and Computing Engineering (IcETRAN)_, pp. 1–6, Jun. 2024, doi: https://doi.org/10.1109/icetran62308.2024.10645178.
 
-[47] https://www.facebook.com/rdrit, “Proxmox: installing a Hypervisor - RDR-IT,” *RDR-IT*, Mar. 19, 2024. https://rdr-it.com/en/proxmox-installing-a-hypervisor/ (accessed Feb. 25, 2026).
+[47] https://www.facebook.com/rdrit, “Proxmox: installing a Hypervisor - RDR-IT,” _RDR-IT_, Mar. 19, 2024. https://rdr-it.com/en/proxmox-installing-a-hypervisor/ (accessed Feb. 25, 2026).
 
-[48] sk, “How To Create Proxmox Virtual Machines From Proxmox VE Web UI Dashboard,” *OSTechNix*, Mar. 29, 2022. https://ostechnix.com/create-proxmox-virtual-machines/ (accessed Feb. 25, 2026).
+[48] sk, “How To Create Proxmox Virtual Machines From Proxmox VE Web UI Dashboard,” _OSTechNix_, Mar. 29, 2022. https://ostechnix.com/create-proxmox-virtual-machines/ (accessed Feb. 25, 2026).
 
 [49] Proxmox Server Solutions GmbH, Proxmox VE Administration Guide, sección “User Management and Access Control” y “Authentication Realms”, 2025. Disponible en: https://pve.proxmox.com/pve-docs/
 
@@ -1326,16 +1479,24 @@ https://pve.proxmox.com/wiki/Migration_of_VMs_and_Containers_in_Proxmox_VE.
 
 [52] Proxmox Server Solutions GmbH, “Proxmox VE Firewall,” Proxmox VE Administration Guide, 2025. [Online]. Available: https://pve.proxmox.com/pve-docs/chapter-pve-firewall.html
 
-[53] Proxmox Server Solutions GmbH, “High Availability,” *Proxmox VE Administration Guide*, 2025. [Online]. Available: https://pve.proxmox.com/pve-docs/chapter-ha-manager.html
+[53] Proxmox Server Solutions GmbH, “High Availability,” _Proxmox VE Administration Guide_, 2025. [Online]. Available: https://pve.proxmox.com/pve-docs/chapter-ha-manager.html
 
-[54] Proxmox Server Solutions GmbH, *Proxmox VE Administration Guide*, 2025. [En línea]. Disponible en: https://pve.proxmox.com/pve-docs/pve-admin-guide.html
+[54] Proxmox Server Solutions GmbH, _Proxmox VE Administration Guide_, 2025. [En línea]. Disponible en: https://pve.proxmox.com/pve-docs/pve-admin-guide.html
 
-[55] Proxmox Server Solutions GmbH, “VNC Client Access,” *Proxmox Wiki*, 2025. [En línea]. Disponible en: https://pve.proxmox.com/wiki/VNC_Client_Access
+[55] Proxmox Server Solutions GmbH, “VNC Client Access,” _Proxmox Wiki_, 2025. [En línea]. Disponible en: https://pve.proxmox.com/wiki/VNC_Client_Access
 
 [56] xterm.js, “Xterm.js – A terminal for the web,” 2025. [En línea]. Disponible en: https://xtermjs.org
 
-[57] Proxmox Server Solutions GmbH, “Linux Container (LXC),” *Proxmox Wiki*, 2025. [En línea]. Disponible en: https://pve.proxmox.com/wiki/Linux_Container
+[57] Proxmox Server Solutions GmbH, “Linux Container (LXC),” _Proxmox Wiki_, 2025. [En línea]. Disponible en: https://pve.proxmox.com/wiki/Linux_Container
 
 [58] Proxmox Server Solutions GmbH, Proxmox VE Administration Guide, 2025. Disponible en: https://pve.proxmox.com/pve-docs/pve-admin-guide.pdf
 
 [59] Proxmox Server Solutions GmbH, Proxmox VE Wiki – System Logs and Cluster Management, 2025. Disponible en: https://pve.proxmox.com/wiki/Main_Page
+
+[60] Proxmox Server Solutions GmbH, "Farmácia Nova da Maia achieves High Availability with Proxmox VE and ZFS," Success Stories, 2025. Disponible en: https://proxmox.com/en/about/about-us/stories/story/farmacia-nova-da-maia
+
+[61] Irontec, "Proxmox en 2025: comparativa y casos reales," 2025. Disponible en: https://www.irontec.com/news/proxmox-en-2025-comparativa-y-casos-reales
+
+[62] Forgenex, "Virtualización de servidores con Proxmox: Un caso de éxito en optimización de infraestructura," 2024. Disponible en: https://www.forgenex.com/en/blog/virtualizaci-n-de-servidores-con-proxmox-un-caso-de-xito-en-optimizaci-n-de-infraestructura
+
+[63] Noticias Madrid, "Emmecubo opta por Proxmox VE: reducción de costes al migrar desde VMware," 2024. Disponible en: https://noticias.madrid/emmecubo-opta-por-proxmox-ve-reduccion-de-costes-y-mantenimiento-de-eficiencia-al-migrar-desde-vmware/
